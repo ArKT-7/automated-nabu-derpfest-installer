@@ -15,10 +15,12 @@
 
 ```plaintext
 Derfest-rom.zip
+
 -install_derpfest_linux.sh
 -install_derpfest_windows.bat
 -update_derpfest_linux.sh
 -update_derpfest_windows.bat
+
 └── images
     ├── boot.img
     ├── dtbo.img
@@ -30,12 +32,17 @@ Derfest-rom.zip
     ├── vbmeta.img
     ├── vbmeta_system.img
     └── vendor_boot.img
+
 └── bin
     ├── windows
     │   ├── platform-tools (files)
     │   └── log-tool (tee.exe files)
     └── linux
         └── platform-tools (files)
+
+└── ROOT_APK_INSATLL_THIS_ONLY
+    ├── KernelSU.apk (1.0.1)
+    └── Magisk.apk (V28 Stable)
 ```
 
 ## 🔧 Installation and Usage
@@ -55,12 +62,13 @@ Derfest-rom.zip
    
 #### 2. Run the installation or update script:
    ```bash
-   ./install_derpfest_linux.sh    # For installation
-   ./update_derpfest_linux.sh     # For updating
+   sudo bash ./install_derpfest_linux.sh    # For installation
+   sudo bash ./update_derpfest_linux.sh     # For updating
    ```
 
 ### 📜 Notes
 - **Images Folder:** Contains necessary partition images.
+- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores Magisk apk from which the Magisk boot is patched and KSU apk (For root).
 - **Bin Folder:** Stores platform tools and logging utilities for both Windows and Linux.
   - **Platform Tools for Windows:** [Download here](https://developer.android.com/studio/releases/platform-tools)  
   - **Platform Tools for Linux:** [Download here](https://developer.android.com/studio/releases/platform-tools)  
