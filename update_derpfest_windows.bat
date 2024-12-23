@@ -450,6 +450,7 @@ echo.
 call :log "%YELLOW%Flashing super%RESET%"
 %fastboot% flash super images\super.img 2>&1 | %tee% -a "%log_file%"
 echo.
+%fastboot% reboot 2>&1 | %tee% -a "%log_file%"
 goto finished
 
 :finished
