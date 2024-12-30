@@ -33,6 +33,15 @@ Derfest-rom.zip
     ├── vbmeta_system.img
     └── vendor_boot.img
 
+└── META-INF
+    └── com
+        ├── arkt 
+        │   └── bootctl (binary for switch slot)
+        └── google
+            └── android
+                ├── update-binary 
+                └── updater-script 
+
 └── bin
     ├── windows
     │   ├── platform-tools (files)
