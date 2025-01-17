@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Derpfest Auto Installer
+title Derpfest Auto Installer 1.6
 cd %~dp0
 
 echo.

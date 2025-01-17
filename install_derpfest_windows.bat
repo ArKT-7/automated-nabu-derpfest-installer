@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-title Derpfest Auto Installer
+title Derpfest Auto Installer 1.6
 cd %~dp0
 
 echo.
@@ -465,6 +465,9 @@ call :log "%YELLOW%Flashing userdata%RESET%"
 echo.
 call :log "%YELLOW%Erasing userdata%RESET%"
 %fastboot% erase userdata 2>&1 | %tee% -a "%log_file%"
+echo.
+REM call :log "%YELLOW%Erasing frp (fix)%RESET%"
+%fastboot% erase frp 2>&1 | %tee% -a "%log_file%"
 %fastboot% reboot 2>&1 | %tee% -a "%log_file%"
 goto finished
 
