@@ -30,7 +30,7 @@ print_derpfest_ascii() {
     echo " ░ ▒  ▒  ░ ░  ░  ░▒ ░ ▒░░▒ ░      ░       ░ ░  ░░ ░▒  ░ ░    ░    "
     echo " ░ ░  ░    ░     ░░   ░ ░░        ░ ░       ░   ░  ░  ░    ░      "
     echo
-    echo "                             P.A.N.Z                              "
+    echo "                             P.A.N.Z.                             "
     echo "Script By, @ArKT_7"
     echo
 }
@@ -48,7 +48,7 @@ print_log_derpfest_ascii() {
     echo " ░ ▒  ▒  ░ ░  ░  ░▒ ░ ▒░░▒ ░      ░       ░ ░  ░░ ░▒  ░ ░    ░    " | tee -a "$log_file"
     echo " ░ ░  ░    ░     ░░   ░ ░░        ░ ░       ░   ░  ░  ░    ░      " | tee -a "$log_file"
     echo
-    echo "                             P.A.N.Z                              " | tee -a "$log_file"
+    echo "                             P.A.N.Z.                             " | tee -a "$log_file"
     echo "Script By, @ArKT_7"                                                 | tee -a "$log_file"
 }
 
