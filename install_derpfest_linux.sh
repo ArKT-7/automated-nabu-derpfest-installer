@@ -147,8 +147,8 @@ while true; do
     echo "Choose installation method:" | tee -a "$log_file"
     echo
     echo "1. Without root" | tee -a "$log_file"
-    echo "2. With root (KSU - Kernel SU)" | tee -a "$log_file"
-    echo "3. With root (Magisk 28)" | tee -a "$log_file"
+    echo "2. With root (KSU-N - Kernel SU NEXT)" | tee -a "$log_file"
+    echo "3. With root (Magisk 28.1)" | tee -a "$log_file"
     echo
     read -p "Enter option (1, 2, or 3): " install_choice
     install_choice=$(echo "$install_choice" | xargs) # Strip whitespace
@@ -194,7 +194,7 @@ while true; do
             $fastboot set_active a |& tee -a "$log_file"
 			echo
             echo "flashing ksu_dtbo" | tee -a "$log_file"
-            $fastboot flash dtbo_ab images/ksu_dtbo.img |& tee -a "$log_file"
+            $fastboot flash dtbo_ab images/ksu-n_dtbo.img |& tee -a "$log_file"
 			echo
             echo "flashing vbmeta" | tee -a "$log_file"
             $fastboot flash vbmeta_ab images/vbmeta.img |& tee -a "$log_file"
@@ -203,7 +203,7 @@ while true; do
             $fastboot flash vbmeta_system_ab images/vbmeta_system.img |& tee -a "$log_file"
 			echo
             echo "flashing ksu_boot" | tee -a "$log_file"
-            $fastboot flash boot_ab images/ksu_boot.img |& tee -a "$log_file"
+            $fastboot flash boot_ab images/ksu-n_boot.img |& tee -a "$log_file"
             break
             ;;
         3)
@@ -255,6 +255,9 @@ $fastboot flash userdata images/userdata.img |& tee -a "$log_file"
 echo
 echo "erasing userdata" | tee -a "$log_file"
 $fastboot erase userdata | tee -a "$log_file"
+echo
+#echo "erasing frp (fix)" | tee -a "$log_file"
+$fastboot erase frp | tee -a "$log_file"
 echo
 $fastboot reboot |& tee -a "$log_file"
 echo

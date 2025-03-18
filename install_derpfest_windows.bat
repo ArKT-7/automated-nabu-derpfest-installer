@@ -11,7 +11,7 @@ set YELLOW=%ESC%[93m
 set GREEN=%ESC%[92m
 set RESET=%ESC%[0m
 
-set required_files=boot.img dtbo.img ksu_boot.img ksu_dtbo.img magisk_boot.img super.img userdata.img vbmeta.img vbmeta_system.img vendor_boot.img
+set required_files=boot.img dtbo.img ksu-n_boot.img ksu-n_dtbo.img magisk_boot.img super.img userdata.img vbmeta.img vbmeta_system.img vendor_boot.img
 
 if not exist "images" (
     echo %RED%ERROR! Please extract the zip again. 'images' folder is missing.%RESET%
@@ -213,13 +213,13 @@ echo.
 call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
 echo %YELLOW%1.%RESET% Without root
-echo %YELLOW%2.%RESET% With root (KSU - Kernel SU)
+echo %YELLOW%2.%RESET% With root (KSU-N - Kernel SU NEXT)
 echo %YELLOW%3.%RESET% With root (Magisk 28.1)
 echo.
 set /p install_choice=%YELLOW%Enter option (1, 2, or 3):%RESET% 
 
 if "%install_choice%"=="1" goto install_no_root
-if "%install_choice%"=="2" goto install_ksu
+if "%install_choice%"=="2" goto install_ksu-n
 if "%install_choice%"=="3" goto install_magisk
 echo.
 call :log "%RED%Invalid option. %YELLOW%Please try again.%RESET%"
@@ -239,7 +239,7 @@ CALL :FlashPartition vbmeta vbmeta.img
 CALL :FlashPartition vbmeta_system vbmeta_system.img
 CALL :FlashPartition boot boot.img
 goto common_flash
-:install_ksu
+:install_ksu-n
 cls
 cls
 CALL :print_derpfest_ascii
@@ -248,10 +248,10 @@ echo.
 call :log "%YELLOW%Starting installation with KSU...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
-CALL :FlashPartition dtbo ksu_dtbo.img
+CALL :FlashPartition dtbo ksu-n_dtbo.img
 CALL :FlashPartition vbmeta vbmeta.img
 CALL :FlashPartition vbmeta_system vbmeta_system.img
-CALL :FlashPartition boot ksu_boot.img
+CALL :FlashPartition boot ksu-n_boot.img
 goto common_flash
 :install_magisk
 cls
