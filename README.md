@@ -71,8 +71,8 @@ Derfest-rom.zip
    
 #### 2. Run the installation or update script:
    ```bash
-   sudo bash ./install_derpfest_linux.sh    # For installation
-   sudo bash ./update_derpfest_linux.sh     # For updating
+   bash ./install_derpfest_linux.sh    # For installation
+   bash ./update_derpfest_linux.sh     # For updating
    ```
 
 ### 📜 Notes
