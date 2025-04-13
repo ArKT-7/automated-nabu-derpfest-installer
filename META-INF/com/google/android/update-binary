@@ -109,7 +109,7 @@ check_file_and_hash() {
         ui_print " Error: $file_path not found in the auto-installer package!"
 		ui_print " "
         ui_print " Your download may be corrupted. Please download again."
-        ui_print " If the issue persists, send a screenshot in the group for help."
+        ui_print " If the issue persists, pls send a screenshot in the group for help."
 		ui_print ""
         exit 1
     fi
@@ -123,7 +123,7 @@ check_file_and_hash() {
         ui_print " Got: $actual_hash"
 	ui_print " "
         ui_print " Your download may be corrupted. Please download again."
-        ui_print " If the issue persists, send a screenshot in the group for help."
+        ui_print " If the issue persists, pls send a screenshot in the group for help."
 	ui_print " "
         exit 1
     fi
@@ -139,7 +139,7 @@ check_file() {
         ui_print " Error: $file_path not found in the auto-installer package!"
 		ui_print " "
         ui_print " Your download may be corrupted. Please download again."
-        ui_print " If the issue persists, send a screenshot in the group for help."
+        ui_print " If the issue persists, pls send a screenshot in the group for help."
 		ui_print ""
         exit 1
     fi
