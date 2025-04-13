@@ -36,7 +36,7 @@ Derfest-rom.zip
 └── META-INF
     └── com
         ├── arkt 
-        │   └── bootctl                #binary for switch slot
+        │   └── bootctl                # binary for switch slot
         │   ├── busybox                # Multi-tool binary for Linux shell support
         │   ├── libhidltransport.so    # Shared HIDL communication lib
         │   └── libhwbinder.so         # Shared binder IPC lib
