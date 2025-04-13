@@ -36,7 +36,10 @@ Derfest-rom.zip
 └── META-INF
     └── com
         ├── arkt 
-        │   └── bootctl (binary for switch slot)
+        │   └── bootctl                #binary for switch slot
+        │   ├── busybox                # Multi-tool binary for Linux shell support
+        │   ├── libhidltransport.so    # Shared HIDL communication lib
+        │   └── libhwbinder.so         # Shared binder IPC lib
         └── google
             └── android
                 ├── update-binary 
@@ -77,7 +80,7 @@ Derfest-rom.zip
 
 ### 📜 Notes
 - **Images Folder:** Contains necessary partition images.
-- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores [Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v28.1) from which the Magisk boot is patched and [KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.5) (For root).
+- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores [Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v28.1) from which the Magisk boot is patched and [KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.6) (For root).
 - **Bin Folder:** Stores platform tools and logging utilities for both Windows and Linux.
   - **Platform Tools for Windows:** [Download here](https://developer.android.com/studio/releases/platform-tools)  
   - **Platform Tools for Linux:** [Download here](https://developer.android.com/studio/releases/platform-tools)  
