@@ -76,7 +76,7 @@ case "$selection" in
     ;;
   3)
     ui_print " "
-	ui_print "Okey, see u soon! XD"
+	ui_print "Okay, see u soon! XD"
 	rm -rf $UPD_TEMP_FOLDER
     exit
     ;;
