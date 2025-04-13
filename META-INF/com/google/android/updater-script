@@ -19,7 +19,7 @@ ui_print "     | |_| |  __/ |  | |_) |  _|  __/\__ \ |_       "
 ui_print "     |____/ \___|_|  | .__/|_|  \___||___/\__|      "
 ui_print "                     |_|                            "
 ui_print "                                                    "
-ui_print "          Are you ready for the Derpness?           "
+ui_print "          Are you ready for the DEEPNESS?           "
 ui_print "                                                    "
 ui_print "----------------------------------------------------"
 ui_print " Android version: 15"
@@ -51,7 +51,7 @@ ui_print " "
 set_progress 0.01    
 progress 0.10 2  
 
-options=("Option 1: No ROOT" "Option 2: Root with Kernel SU Next - KSU-N" "Option 3: Root with Magisk 28.1" "Option 4: Cancel Flashing ROM")
+options=("Option 1: No ROOT" "Option 2: Root with Kernel-SU NEXT + SUSFS" "Option 3: Root with Magisk 28.1" "Option 4: Cancel Flashing ROM")
 navigate_menu "${options[@]}"
 
 # Process based on selection
