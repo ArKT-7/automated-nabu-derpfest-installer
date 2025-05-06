@@ -1,0 +1,108 @@
+#!/sbin/bash
+#
+# Copyright (C) 2025-26 https://github.com/ArKT-7
+#
+# Made for flash Android rom in recovery for Xiaomi Pad 5 (Nabu)
+#
+
+if [ "$(getprop ro.product.device)" != "nabu" ]; then 
+    ui_print "This script is only for Xiaomi Pad 5 (NABU)"
+    ui_print "Your device is $(getprop ro.product.device)." 
+    exit 1
+fi
+
+ui_print "----------------------------------------------------"
+ui_print "      ____                  _____         _         "
+ui_print "     |  _ \  ___ _ __ _ __ |  ___|__  ___| |_       "
+ui_print "     | | | |/ _ \ '__| '_ \| |_ / _ \/ __| __|      "
+ui_print "     | |_| |  __/ |  | |_) |  _|  __/\__ \ |_       "
+ui_print "     |____/ \___|_|  | .__/|_|  \___||___/\__|      "
+ui_print "                     |_|                            "
+ui_print "                                                    "
+ui_print "          Are you ready for the DEEPNESS?           "
+ui_print "                                                    "
+ui_print "----------------------------------------------------"
+ui_print " Android version: 15"
+ui_print " Device: Xiaomi Pad 5"
+ui_print " Security Patch: 2025-03-01"
+ui_print " Build Date: April 10 2025"
+ui_print " DerpFest Version: Official-Stable-nabu-20250410-2139"
+ui_print " Auto-Installer Version: 2.4"
+ui_print "----------------------------------------------------"
+ui_print " "
+ui_print " Verifying files integrity and checks"
+check_file_and_hash "images/boot.img" "aa339f74c88d53b52bebec854c7851d4e07738800953aaa1b4c128821754bcd0"
+check_file_and_hash "images/dtbo.img" "db65406b0f44b9f61905825a9bc97133a08d4f1e40db5695607d80e90c632a9b"
+check_file_and_hash "images/ksu-n_boot.img" "42d917ddc0b42930e5f10331ca6be84ebd85c15c6c38620cd5389307a5eba22d"
+check_file_and_hash "images/ksu-n_dtbo.img" "ad89c5dca6143b82b0f25870863a4e16167174166773cde702ce8ec908172d4a"
+check_file_and_hash "images/magisk_boot.img" "814e83348184f511b4576cf07df3ac5627d66d957f40eb96da3d4af3c5a68862"
+check_file_and_hash "images/vendor_boot.img" "6976b4dfa8df96cbbe08d1ba97346197c49b47a45e74a8ab59f10332befd5417"
+check_file_and_hash "images/vbmeta.img" "8aab5ab7c105ac8904e4c3b3188cdfe31defce6aee2c99fca3f40133ce05e799"
+check_file_and_hash "images/vbmeta_system.img" "7a5569d87f9ea06d1cb445e124008e44eafaab1e0303f7f90328c00b5b606aa6"
+check_file_and_hash "images/userdata.img" "e1dda2b89de5cb781012a0b75999d3a01d2978a4d16a3a5f13440d32cd260ef6"
+check_file "images/super.img" 
+ui_print " "
+ui_print " Verifications Done"
+ui_print " "
+ui_print "----------------------------------------------------"
+ui_print " "
+ui_print " Choose installation method:"
+ui_print " "
+aio_progress 0.1 0
+aio_progress 0.1 2
+
+options=("Option 1: No ROOT" "Option 2: Root with Kernel-SU NEXT + SUSFS" "Option 3: Root with Magisk 28.1" "Option 4: Cancel Flashing ROM")
+navigate_menu "${options[@]}"
+
+# Process based on selection
+case "$selection" in
+  0)
+    ui_print " "
+	flash_image "boot" "boot" 0.02 3
+	flash_image "dtbo" "dtbo" 0.03 3
+	change_slot a
+    ;;
+  1)
+    ui_print " "
+	flash_image "ksu-n_boot" "boot" 0.02 3
+	flash_image "ksu-n_dtbo" "dtbo" 0.03 3
+	change_slot a
+    ;;
+  2)
+    ui_print " "
+	flash_image "magisk_boot" "boot" 0.02 3
+	flash_image "dtbo" "dtbo" 0.03 3
+	change_slot a
+    ;;
+  3)
+    ui_print " "
+	ui_print "Okay, see u soon! XD"
+	rm -rf $UPD_TEMP_FOLDER
+    exit
+    ;;
+esac
+
+flash_image "vendor_boot" "vendor_boot" 0.04 2
+flash_image "vbmeta" "vbmeta" 0.05 2
+flash_image "vbmeta_system" "vbmeta_system" 0.06 2
+
+aio_progress 0.9 100  
+ui_print " Flashing super image.."
+package_extract_image "images/super.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/super"
+
+ui_print " "
+ui_print " Set active boot slot a..."
+change_slot a
+
+aio_progress 1.0 0
+ui_print " "
+ui_print "-----------------"
+ui_print " rom by P.A.N.Z. "
+ui_print " "
+ui_print " Flasher by ArKT "
+ui_print "-----------------"
+ui_print " "
+ui_print " Enjoy DerpFest!"
+ui_print " "
+rm -rf $UPD_TEMP_FOLDER
+exit
