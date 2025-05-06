@@ -11,25 +11,6 @@ UPD_TEMP_FOLDER="/dev/tmp/arkt"
 
 set -o pipefail
 
-set_progress() {
-    if [ $# -ne 1 ]; then
-        ui_print " set_progress expects 1 argument, got $#"
-        ui_print " Usage: set_progress <fraction>"
-        return 1
-    fi
-    echo "set_progress $1" >> "$UPD_INTERFACE"
-    sleep 0.1  # Allow UI to register
-}
-
-progress() {
-    if [ $# -ne 2 ]; then
-        ui_print " progress expects 2 arguments, got $#"
-        ui_print " Usage: progress <fraction> <duration>"
-        return 1
-    fi
-    echo "progress $1 $2" >> "$UPD_INTERFACE"
-}
-
 ui_print() {
     while [ -n "$1" ]; do
         if [ -n "$UPD_INTERFACE" ] && [ -w "$UPD_INTERFACE" ]; then
@@ -40,6 +21,28 @@ ui_print() {
         fi
         shift
     done
+}
+
+current_progress=0.0
+aio_progress() {
+    if [ $# -ne 2 ]; then
+        ui_print "Error: aio_progress expects 2 arguments, got $#"
+        ui_print "Usage: aio_progress <target_fraction> <duration_in_seconds>"
+        return 1
+    fi
+    target="$1"
+    duration="$2"
+    if ! echo "$target" | grep -Eq '^[0-9]+([.][0-9]+)?$'; then
+        ui_print "Error: Target value '$target' is not a valid number"
+        return 1
+    fi
+    if ! echo "$duration" | grep -Eq '^[0-9]+([.][0-9]+)?$'; then
+        ui_print "Error: Duration value '$duration' is not a valid number"
+        return 1
+    fi
+    delta=$(awk "BEGIN { print $target - $current_progress }")
+    echo "progress $delta $duration" >> "$UPD_INTERFACE"
+    current_progress=$target
 }
 
 package_extract_file() {
