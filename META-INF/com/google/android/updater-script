@@ -48,8 +48,8 @@ ui_print "----------------------------------------------------"
 ui_print " "
 ui_print " Choose installation method:"
 ui_print " "
-set_progress 0.01    
-progress 0.10 2  
+aio_progress 0.1 0
+aio_progress 0.1 2
 
 options=("Option 1: No ROOT" "Option 2: Root with Kernel-SU NEXT + SUSFS" "Option 3: Root with Magisk 28.1" "Option 4: Cancel Flashing ROM")
 navigate_menu "${options[@]}"
@@ -86,7 +86,7 @@ flash_image "vendor_boot" "vendor_boot" 0.04 2
 flash_image "vbmeta" "vbmeta" 0.05 2
 flash_image "vbmeta_system" "vbmeta_system" 0.06 2
 
-progress 0.9 100  
+aio_progress 0.9 100  
 ui_print " Flashing super image.."
 package_extract_image "images/super.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/super"
 
@@ -94,7 +94,7 @@ ui_print " "
 ui_print " Set active boot slot a..."
 change_slot a
 
-set_progress 1.0
+aio_progress 1.0 0
 ui_print " "
 ui_print "-----------------"
 ui_print " rom by P.A.N.Z. "
