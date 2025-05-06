@@ -84,8 +84,8 @@ flash_image() {
     package_extract_image "images/${image_name}.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/${partition}_a"
     package_extract_image "images/${image_name}.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/${partition}_b"
     ui_print " "
-    set_progress $progress_start
-    progress 0.10 $progress_duration
+    aio_progress $progress_start 0
+    aio_progress 0.10 $progress_duration
 }
 
 
