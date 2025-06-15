@@ -1,8 +1,7 @@
 # 🚀 Automated Derpfest Installer for Xiaomi Pad 5 (nabu)
 
 ## A simple and efficient script to flash Derpfest ROM on the Xiaomi Pad 5 (nabu) in fastboot mode and same zip can be flash in recovery.
-### ROM A15 LATEST FLASTBOOT/RECOVERY FLASHABLE LINK [DerpFest-15-Official-Stable-nabu-20241225-1940-FASTBOOT_RECOVERY](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/download/derpfest-december/DerpFest-15-Official-Stable-nabu-20241225-1940-FASTBOOT_RECOVERY.zip)
-#### ROM A14 FLASTBOOT FLASHABLE LINK [DerpFest-14-Official-Stable-nabu-20241013-0221-fastboot](https://1drv.ms/u/s!ArrRdTwOqQPll4EqH9ISU1xpc2n1nA)
+### ROM A15.2 Latest Fastboot/Recovery Flashable Download: [DerpFest-v15.2-20250613-nabu-Official-Stable_FASTBOOT_RECOVERY](https://1drv.ms/u/c/e503a90e3c75d1ba/EQqNTufWisdMvsGu6wgJapgBuUPTfSILu8PZ6rjHXx7dWw?e=q7Ipc0)
 ### 🏆 Original ROM Creator
 ### This ROM was built by [P.A.N.Z](https://github.com/ppanzenboeck). Special thanks for making this ROM available!
 ---
@@ -11,15 +10,15 @@
 ---
 
 ## 📂 Folder Structure
-### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-november), and organize them as follows:
+### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-june-25), and organize them as follows:
 
 ```plaintext
 Derfest-rom.zip
 
--install_derpfest_linux.sh
--install_derpfest_windows.bat
--update_derpfest_linux.sh
--update_derpfest_windows.bat
+-install_DerpFest_linux.sh
+-install_DerpFest_windows.bat
+-update_DerpFest_linux.sh
+-update_DerpFest_windows.bat
 
 └── images
     ├── boot.img
@@ -34,6 +33,7 @@ Derfest-rom.zip
     └── vendor_boot.img
 
 └── META-INF
+    ├── autoinstaller.conf         # Configration file for recovery flasher script
     └── com
         ├── arkt 
         │   └── bootctl                # binary for switch slot
@@ -53,8 +53,8 @@ Derfest-rom.zip
         └── platform-tools (files)
 
 └── ROOT_APK_INSATLL_THIS_ONLY
-    ├── KernelSU.apk (1.0.1)
-    └── Magisk.apk (V28.1 Stable)
+    ├── KernelSU_Next.apk
+    └── Magisk.apk
 ```
 
 ## 🔧 Installation and Usage
@@ -62,28 +62,28 @@ Derfest-rom.zip
 ### Windows Users:
 - Simply run the .bat file for installation or updating:
   ```plaintext
-  install_derpfest_windows.bat   # For installation
-  update_derpfest_windows.bat    # For updating
+  install_DerpFest_windows.bat   # For first time installation/with data format
+  update_DerpFest_windows.bat    # For updating without data format
   ```
   
 ### Linux Users:
 #### 1. Make sure the scripts are executable(If Needed):
    ```bash
-   chmod +x install_derpfest_linux.sh update_derpfest_linux.sh
+   chmod +x install_DerpFest_linux.sh update_DerpFest_linux.sh
    ```
    
 #### 2. Run the installation or update script:
    ```bash
-   bash ./install_derpfest_linux.sh    # For installation
-   bash ./update_derpfest_linux.sh     # For updating
+   bash ./install_DerpFest_linux.sh    # For first time installation/with data format
+   bash ./update_DerpFest_linux.sh     # For updating without data format
    ```
 
 ### 📜 Notes
 - **Images Folder:** Contains necessary partition images.
-- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v28.1)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.6)** (For root).
+- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v29.0)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.7)** (For root).
 - **Bin Folder:** Stores platform tools and logging utilities for both Windows and Linux.
-  - **Platform Tools for Windows:** **[Download here](https://developer.android.com/studio/releases/platform-tools)**  
-  - **Platform Tools for Linux:** **[Download here](https://developer.android.com/studio/releases/platform-tools)**  
+  - **Platform Tools for Windows:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-windows.zip)**  
+  - **Platform Tools for Linux:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)**  
   - **tee.exe for Windows logging utility:** **[Download here](https://github.com/dEajL3kA/tee-win32)**
   - If these files or folders are missing, the script will automatically download the required files, create the necessary folders, and place the platform tools and logging utilities in the appropriate locations.
 
