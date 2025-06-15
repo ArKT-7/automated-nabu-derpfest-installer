@@ -1,4 +1,5 @@
-here put derfest rom .img files (latest files has been uploaded to release section)
+here put DerpFest rom .img files (latest files has been uploaded to release section)
+
 1. boot.img
 2. dtbo.img
 3. ksu-n_boot.img
@@ -10,4 +11,4 @@ here put derfest rom .img files (latest files has been uploaded to release secti
 9. vbmeta_system.img
 10. vendor_boot.img
 
-you can downlaod this files from release section
+you can download this files from release section

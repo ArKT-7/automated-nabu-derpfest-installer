@@ -19,7 +19,7 @@ if [ ! -d "$base_dir/bin/linux" ]; then
     mkdir -p "bin/linux"
 fi
 
-print_derpfest_ascii() {
+print_ascii() {
     echo
     echo "█████▄ ▓█████  ██▀███   ██▓███    █████▒▓█████   ██████ ▄▄▄█████▓ "
     echo "▒██▀ ██▌▓█   ▀ ▓██ ▒ ██▒▓██░  ██▒▓██   ▒ ▓█   ▀ ▒██    ▒ ▓  ██▒ ▓▒"
@@ -37,7 +37,7 @@ print_derpfest_ascii() {
 
 # Function to print and log cool ascii header
 # NOTE: see above NOTE.
-print_log_derpfest_ascii() {
+print_log_ascii() {
     echo
     echo "█████▄ ▓█████  ██▀███   ██▓███    █████▒▓█████   ██████ ▄▄▄█████▓ " | tee -a "$log_file"
     echo "▒██▀ ██▌▓█   ▀ ▓██ ▒ ██▒▓██░  ██▒▓██   ▒ ▓█   ▀ ▒██    ▒ ▓  ██▒ ▓▒" | tee -a "$log_file"
@@ -88,7 +88,7 @@ download_platform_tools() {
     rm "$platform_tools_zip"
 }
 
-print_derpfest_ascii
+print_ascii
 
 read -p "Do you want to download dependencies? (y/n): " answer
 case "$answer" in
@@ -130,7 +130,7 @@ fi
 
 clear    
 
-print_log_derpfest_ascii
+print_log_ascii
 
 echo
 
@@ -140,7 +140,7 @@ while true; do
     echo
     echo "1. Without root" | tee -a "$log_file"
     echo "2. With root (KSU-N - Kernel SU NEXT)" | tee -a "$log_file"
-    echo "3. With root (Magisk 28.1)" | tee -a "$log_file"
+    echo "3. With root (Magisk 29.0)" | tee -a "$log_file"
     echo
     read -p "Enter option (1, 2, or 3): " install_choice
     install_choice=$(echo "$install_choice" | xargs) # Strip whitespace
@@ -155,7 +155,7 @@ while true; do
         1)
             clear    
 			
-            print_derpfest_ascii
+            print_ascii
 
             echo "##################################################################"
             echo "Please wait. The device will reboot when installation is finished."
@@ -178,14 +178,14 @@ while true; do
         2)
             clear    
 			
-            print_derpfest_ascii
+            print_ascii
 
             echo "##################################################################"
             echo "Please wait. The device will reboot when installation is finished."
             echo "##################################################################"
             $fastboot set_active a |& tee -a "$log_file"
 			echo
-            echo "flashing ksu_dtbo" | tee -a "$log_file"
+            echo "flashing ksu-n_dtbo" | tee -a "$log_file"
             $fastboot flash dtbo_ab images/ksu-n_dtbo.img |& tee -a "$log_file"
 			echo
             echo "flashing vbmeta" | tee -a "$log_file"
@@ -194,14 +194,14 @@ while true; do
             echo "flashing vbmeta_system" | tee -a "$log_file"
             $fastboot flash vbmeta_system_ab images/vbmeta_system.img |& tee -a "$log_file"
 			echo
-            echo "flashing ksu_boot" | tee -a "$log_file"
+            echo "flashing ksu-n_boot" | tee -a "$log_file"
             $fastboot flash boot_ab images/ksu-n_boot.img |& tee -a "$log_file"
             break
             ;;
         3)
             clear    
 			
-            print_derpfest_ascii
+            print_ascii
 
             echo "##################################################################"
             echo "Please wait. The device will reboot when installation is finished."
@@ -226,7 +226,7 @@ done
 
 clear    
 
-print_derpfest_ascii
+print_ascii
 
 echo "##################################################################"
 echo "Please wait. The device will reboot when installation is finished."
@@ -242,7 +242,7 @@ echo
 $fastboot reboot |& tee -a "$log_file"
 echo
 
-print_log_derpfest_ascii
+print_log_ascii
 
 echo
 echo "Installation is complete! Your device has rebooted successfully." | tee -a "$log_file"

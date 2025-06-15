@@ -1,1 +1,1 @@
-Here all binary will be downlaod, like platform-tools(windows & linux) and tee(for loging)
+Here all binary will be download, like platform-tools(windows & Linux) and tee(for logging)

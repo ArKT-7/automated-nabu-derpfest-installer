@@ -1,9 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
-title Derpfest Auto Installer 2.1
+title Derpfest Auto-Installer 3.0
 cd %~dp0
 
-CALL :print_derpfest_ascii
+CALL :print_ascii
 
 for /f %%a in ('echo prompt $E ^| cmd') do set "ESC=%%a"
 set RED=%ESC%[91m
@@ -57,7 +57,7 @@ set "tee_extract_folder=bin\windows\log-tool"
 set "check_flag=bin\download.flag"
 cls
 cls
-CALL :print_derpfest_ascii
+CALL :print_ascii
 
 if not exist "%check_flag%" (
     goto download_ask
@@ -183,7 +183,7 @@ set "log_file=logs\derpfest_log_%date:/=-%_%time::=-%.txt"
 echo. > "%log_file%"
 cls
 cls
-CALL :print_log_derpfest_ascii
+CALL :print_log_ascii
 echo.
 call :log "%YELLOW%Waiting for device...%RESET%"
 set device=unknown
@@ -200,7 +200,7 @@ if "%device%" neq "nabu" (
 )
 cls
 cls
-CALL :print_derpfest_ascii
+CALL :print_ascii
 call :log "%GREEN%Device detected. Proceeding with installation...%RESET%"
 echo.
 call :log "%RED%NOTE! - %YELLOW%You are going to wipe your data and internal storage.%RESET%"
@@ -214,7 +214,7 @@ call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
 echo %YELLOW%1.%RESET% Without root
 echo %YELLOW%2.%RESET% With root (KSU-N - Kernel SU NEXT)
-echo %YELLOW%3.%RESET% With root (Magisk 28.1)
+echo %YELLOW%3.%RESET% With root (Magisk 29.0)
 echo.
 set /p install_choice=%YELLOW%Enter option (1, 2, or 3):%RESET% 
 
@@ -228,7 +228,7 @@ goto choose_method
 :install_no_root
 cls
 cls
-CALL :print_derpfest_ascii
+CALL :print_ascii
 CALL :print_note
 echo.
 call :log "%YELLOW%Starting installation without root...%RESET%"
@@ -242,7 +242,7 @@ goto common_flash
 :install_ksu-n
 cls
 cls
-CALL :print_derpfest_ascii
+CALL :print_ascii
 CALL :print_note
 echo.
 call :log "%YELLOW%Starting installation with KSU...%RESET%"
@@ -256,7 +256,7 @@ goto common_flash
 :install_magisk
 cls
 cls
-CALL :print_derpfest_ascii
+CALL :print_ascii
 CALL :print_note
 echo.
 call :log "%YELLOW%Starting installation with Magisk...%RESET%"
@@ -271,14 +271,14 @@ goto common_flash
 cls
 cls
 echo.
-CALL :print_derpfest_ascii
+CALL :print_ascii
 CALL :print_note
 echo.
 CALL :FlashPartition vendor_boot vendor_boot.img
 cls
 cls
 echo.
-CALL :print_derpfest_ascii
+CALL :print_ascii
 CALL :print_note
 echo.
 call :log "%YELLOW%Flashing super%RESET%"
@@ -300,14 +300,14 @@ goto finished
 :finished
 echo.
 echo.
-CALL :print_log_derpfest_ascii
+CALL :print_log_ascii
 echo.
 call :log "%GREEN%Installation is complete! Your device has rebooted successfully.%RESET%"
 echo.
 set /p "=%YELLOW%Press any key to exit%RESET%" <nul
 pause >nul
 exit
-:print_derpfest_ascii
+:print_ascii
 echo.
 echo  @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@
 echo  @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  
@@ -325,7 +325,7 @@ echo %YELLOW%  WARNING: Do not click on this window, as it will pause the proces
 echo %YELLOW%  Please wait, Device will auto reboot when installation is finished.%RESET%
 echo ######################################################################
 EXIT /B
-:print_log_derpfest_ascii
+:print_log_ascii
 echo.
 call :log  "@@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@"
 call :log  "@@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  "
