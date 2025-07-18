@@ -351,17 +351,14 @@ flash_boot_menu() {
   menu_options=()
   i=0
   while [ $i -lt ${#root_options_filename[@]} ]; do
-    num=$((i / 2 + 1))
+    num=$((i / 3 + 1))
     label="${root_options_filename[$i]}"
     menu_options+=("Option $num: $label")
-    i=$((i + 2))
+    i=$((i + 3))
   done
-
-  cancel_index=$(( ${#root_options_filename[@]} / 2 + 1 ))
+  cancel_index=$(( ${#root_options_filename[@]} / 3 + 1 ))
   menu_options+=("Option $cancel_index: Cancel Flashing ROM")
-
   navigate_menu_timeout "${menu_options[@]}"
-
   if [ "$selection" -eq "${#menu_options[@]}" -o "$selection" -eq $((${#menu_options[@]} - 1)) ]; then
     ui_print " "
     ui_print "    Okay, see u soon! XD"
@@ -369,20 +366,21 @@ flash_boot_menu() {
     bb rm -rf "$UPD_TEMP_FOLDER"
     exit
   fi
-
-  sel_index=$((selection * 2 + 1))
-  filename="${root_options_filename[$sel_index]}"
-
-  if ! bb unzip -l "$UPD_ZIP" | grep -q "images/$filename.img"; then
-    print_exit
-    print_centered " File '$filename.img' not found!"
-    print_centered "Please check (autoinstaller.conf) file"
-    nl_print_centered "if Still same issue, Post a screenshot in the group."
-    exit 1 
-  fi
-
+  sel_index=$((selection * 3 + 1))
+  boot_img="${root_options_filename[$sel_index]}"
+  dtbo_img="${root_options_filename[$((sel_index + 1))]}"
+  for image in "$boot_img" "$dtbo_img"; do
+    if ! bb unzip -l "$UPD_ZIP" | grep -q "images/$image.img"; then
+      print_exit
+      print_centered " File '$image.img' not found!"
+      print_centered "Please check (autoinstaller.conf) file"
+      nl_print_centered "If still same issue, post a screenshot in the group."
+      exit 1
+    fi
+  done
   ui_print " "
-  flash_image "$filename" "boot" 0.02 4
+  flash_image "$boot_img" "boot" 0.02 4
+  flash_image "$dtbo_img" "dtbo" 0.02 4
   change_slot a
 }
 
@@ -413,6 +411,12 @@ package_extract_file "META-INF/com/arkt/libhwbinder.so" "$UPD_TEMP_FOLDER/libhwb
 chmod 0777 "$UPD_TEMP_FOLDER/libhwbinder.so"
 package_extract_file "META-INF/com/arkt/busybox" "$UPD_TEMP_FOLDER/busybox"
 chmod 0777 "$UPD_TEMP_FOLDER/busybox"
+package_extract_file "META-INF/com/arkt/dmsetup" "$UPD_TEMP_FOLDER/dmsetup"
+chmod 0777 "$UPD_TEMP_FOLDER/dmsetup"
+package_extract_file "META-INF/com/arkt/make_f2fs" "$UPD_TEMP_FOLDER/make_f2fs"
+chmod 0777 "$UPD_TEMP_FOLDER/make_f2fs"
+package_extract_file "META-INF/com/arkt/mke2fs" "$UPD_TEMP_FOLDER/mke2fs"
+chmod 0777 "$UPD_TEMP_FOLDER/mke2fs"
 
 if grep -q "^#!/" "$UPD_TEMP_FOLDER/updater-script"; then
     . "$UPD_TEMP_FOLDER/updater-script" "$@"

@@ -11,7 +11,7 @@ source "$CONFIG_FILE"
 # ======================= UI Prints / Functions / Execution ========================
 print_line
 print_ascii
-nln_print_centered "Are you ready for the $ROM_NAME?"
+nln_print_centered "Are you ready for the DEEPNESS?"
 print_line
 verify_device
 ui_print " "
@@ -20,7 +20,7 @@ ui_print " Device: $DEVICE_NAME"
 ui_print " Build Date: $BUILD_DATE"
 ui_print " Security Patch: $SECURITY_PATCH"
 ui_print " $ROM_NAME Version: $ROM_VERSION"
-ui_print " Auto-Installer Version: 3.0"
+ui_print " Auto-Installer Version: 3.1"
 ui_print " "
 print_line
 aio_progress 0.5 10   # start progress from 0% to 50% in 10 seconds
@@ -31,8 +31,23 @@ nln_print_centered "files Verifications Done"
 print_line
 aio_progress 0.5 0 # set progress to 50% instantly 
 print_centered "Choose installation method:"
+format=0
+formatask=("Option 1: Don't format (Dirty Flash)" "Option 2: Format Data (Clean flash)")
+navigate_menu_timeout "${formatask[@]}"
+case "$selection" in
+  0)
+    print_centered "Data will not format!"
+	format=0
+    ;;
+  1)
+    print_centered "Data will format after re-confrmation in end!"
+	format=1
+    ;;
+esac
+print_line
+aio_progress 0.5 0 # set progress to 50% instantly 
+print_centered "Choose installation method:"
 flash_boot_menu
-flash_image "dtbo" "dtbo" 0.03 4
 flash_image "vendor_boot" "vendor_boot" 0.04 3
 flash_image "vbmeta" "vbmeta" 0.05 2
 flash_image "vbmeta_system" "vbmeta_system" 0.06 2
@@ -47,8 +62,32 @@ ui_print " "
 print_line
 print_centered "This rom built by $ROM_MAINTAINER"
 ui_print " "
-print_centered "Flasher/Installer by ArKT"
-print_line -
+print_centered "ROM/Flasher/Installer by ArKT"
+print_line
+if [ "$format" -eq 1 ]; then
+  ui_print " "
+  print_line -
+  print_centered "You selected to format data earlier!"
+  print_centered "Do you really want to format data?"
+
+  confirm_options=("Yes, format it" "No, keep data (Cancel Format)")
+  navigate_menu_timeout "${confirm_options[@]}"
+
+  case "$selection" in
+    0)
+      print_centered "Data will be formatted."
+	  for i in sdcard data; do umount -lf /$i 2>/dev/null; done
+	  "$UPD_TEMP_FOLDER/dmsetup" remove -f userdata 2>/dev/null
+	  for i in userdata metadata cust; do umount -lf /dev/block/platform/soc/1d84000.ufshc/by-name/$i 2> /dev/null; done
+	  "$UPD_TEMP_FOLDER/make_f2fs" -f -g android /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
+	  "$UPD_TEMP_FOLDER/mke2fs" -t ext4 -F /dev/block/platform/soc/1d84000.ufshc/by-name/metadata
+	  "$UPD_TEMP_FOLDER/mke2fs" -t ext4 -F /dev/block/platform/soc/1d84000.ufshc/by-name/cust
+      ;;
+    1)
+      print_centered "Data formatting canceled."
+      ;;
+  esac
+fi
 print_centered "Enjoy $ROM_NAME!"
 print_line
 ui_print " "

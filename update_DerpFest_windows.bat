@@ -1,9 +1,12 @@
+::
+:: Copyright (C) 2025-26 https://github.com/ArKT-7/Auto-Installer-Forge
+::
+:: Made for flashing Android ROMs easily
+::
 @echo off
 setlocal enabledelayedexpansion
-title Derpfest Auto-Installer 3.0
+title DerpFest A16 Auto Installer 3.1
 cd %~dp0
-
-CALL :print_ascii
 
 for /f %%a in ('echo prompt $E ^| cmd') do set "ESC=%%a"
 set RED=%ESC%[91m
@@ -11,14 +14,16 @@ set YELLOW=%ESC%[93m
 set GREEN=%ESC%[92m
 set RESET=%ESC%[0m
 
-set required_files=boot.img dtbo.img ksu-n_boot.img ksu-n_dtbo.img magisk_boot.img super.img userdata.img vbmeta.img vbmeta_system.img vendor_boot.img
+set ROM_MAINTAINER=P.A.N.Z.
+set required_files=boot.img dtbo.img ksu-n_boot.img magisk_boot.img super.img userdata.img vbmeta.img vbmeta_system.img vendor_boot.img
 
+CALL :print_ascii
 if not exist "images" (
-    echo %RED%ERROR! Please extract the zip again. 'images' folder is missing.%RESET%
+    echo %RED%ERROR^^! Please extract the zip again. 'images' folder is missing.%RESET%
 	echo.
-    echo %YELLOW%Press any key to exit...%RESET%
+    echo Press any key to exit...
     pause > nul
-    exit /b
+    exit /b 1
 )
 set missing=false
 set missing_files=
@@ -33,11 +38,11 @@ if "!missing!"=="true" (
 	echo.
     echo %RED%Missing files: !missing_files!%RESET%
 	echo.
-	echo %RED%ERROR! Please extract the zip again. One or more required files are missing in the 'images' folder.%RESET%
+	echo %RED%ERROR^^! Please extract the zip again. One or more required files are missing in the 'images' folder.%RESET%
 	echo.
-    echo %YELLOW%Press any key to exit...%RESET%
+    echo Press any key to exit...
     pause > nul
-    exit /b
+    exit /b 1
 )
 if not exist "logs" (
     mkdir "logs"
@@ -58,7 +63,6 @@ set "check_flag=bin\download.flag"
 cls
 cls
 CALL :print_ascii
-
 if not exist "%check_flag%" (
     goto download_ask
 ) else ( 
@@ -66,42 +70,38 @@ if not exist "%check_flag%" (
 )
 :re_download_ask
 call :get_input "%YELLOW%Do you want to download dependencies again (Y) or %GREEN%continue (C)? %RESET%" download_choice
-
 if /i "%download_choice%"=="y" (
     call :download_dependencies
-) else if /i "%download_choice%"=="c" (
-    echo %YELLOW%Continuing without downloading dependencies...%RESET%
-	goto start
 ) else (
-    echo.
-    echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' to download or 'C' to continue.%RESET%
-    goto re_download_ask
+    echo %YELLOW%Continuing without downloading dependencies...%RESET%
+    goto start
 )
 :download_ask
 call :get_input "%YELLOW%Do you want to download dependencies online or %GREEN%continue? %YELLOW%(Y/C)%RESET%: " download_choice
-
 if /i "%download_choice%"=="y" (
     call :download_dependencies
-) else if /i "%download_choice%"=="c" (
-    echo %YELLOW%Continuing without downloading dependencies...%RESET%
-	goto start
 ) else (
-    echo.
-    echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' to download or 'C' to continue.%RESET%
-    goto download_ask
+    echo %YELLOW%Continuing without downloading dependencies...%RESET%
+    goto start
 )
 :get_input
-setlocal
+set "input="
 set /p input=%~1
-if "%input%"=="" (
-    goto start
-    goto :get_input
-) else if /i not "%input%"=="y" if /i not "%input%"=="c" (
-    echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' to download or 'C' to continue.%RESET%
-    goto :get_input
+if "!input!"=="" (
+    set "input=c"
 )
-endlocal & set "%~2=%input%"
-exit /b
+set "first_char=!input:~0,1!"
+if /i "!first_char!"=="y" (
+    endlocal & set "%~2=y"
+    exit /b 0
+) else if /i "!first_char!"=="c" (
+    endlocal & set "%~2=c"
+    exit /b 0
+)
+echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' or 'C'%RESET%
+echo.
+goto get_input
+
 :download_dependencies
 (
     echo.
@@ -179,7 +179,7 @@ if not exist "%tee%" (
 	echo let's proceed with downloading.
     call :download_dependencies
 )
-set "log_file=logs\derpfest_log_%date:/=-%_%time::=-%.txt"
+set "log_file=logs\auto-installer_log_%date:/=-%_%time::=-%.txt"
 echo. > "%log_file%"
 cls
 cls
@@ -195,36 +195,45 @@ if "%device%" neq "nabu" (
 	echo.
     call :log "%YELLOW%Please connect your Xiaomi Pad 5 - Nabu%RESET%"
 	echo.
-    pause
-    exit /B 1
+    echo Press any key to exit...
+    pause > nul
+    exit /b 1
 )
 cls
 cls
 CALL :print_ascii
 call :log "%GREEN%Device detected. Proceeding with installation...%RESET%"
 echo.
-call :log "%RED%NOTE! - %YELLOW%You are going to wipe your data and internal storage.%RESET%"
-call :log "%RED%NOTE! - %YELLOW%It will delete all your files and photos stored on internal storage.%RESET%"
-echo.
-set /p choice=Do you agree? %YELLOW%(Y/N)%RESET% 
-if /i "%choice%" neq "y" exit
 echo.
 :choose_method
 call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
-echo %YELLOW%1.%RESET% Without root
-echo %YELLOW%2.%RESET% With root (KSU-N - Kernel SU NEXT)
-echo %YELLOW%3.%RESET% With root (Magisk 29.0)
+echo %YELLOW%1.%RESET% With root (KSU-N - Kernel SU NEXT)
+echo %YELLOW%2.%RESET% Without root
+echo %YELLOW%3.%RESET% With root (Magisk v29.0)
+echo %YELLOW%4.%RESET% Cancel Flashing ROM 
 echo.
-set /p install_choice=%YELLOW%Enter option (1, 2, or 3):%RESET% 
+set /p install_choice=Enter option (1, 2, 3 or 4): 
 
-if "%install_choice%"=="1" goto install_no_root
-if "%install_choice%"=="2" goto install_ksu-n
+if "%install_choice%"=="1" goto install_ksu-n
+if "%install_choice%"=="2" goto install_no_root
 if "%install_choice%"=="3" goto install_magisk
-echo.
-call :log "%RED%Invalid option. %YELLOW%Please try again.%RESET%"
+if "%install_choice%"=="4" exit
+call :log "%RED%Invalid option, %YELLOW%Please try again.%RESET%"
 echo.
 goto choose_method
+:install_ksu-n
+cls
+cls
+CALL :print_ascii
+CALL :print_note
+echo.
+call :log "%YELLOW%Starting installation with KSU-NEXT...%RESET%"
+%fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
+echo.
+CALL :FlashPartition boot ksu-n_boot.img
+CALL :FlashPartition dtbo dtbo.img
+goto common_flash
 :install_no_root
 cls
 cls
@@ -234,25 +243,10 @@ echo.
 call :log "%YELLOW%Starting installation without root...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
-CALL :FlashPartition dtbo dtbo.img
-CALL :FlashPartition vbmeta vbmeta.img
-CALL :FlashPartition vbmeta_system vbmeta_system.img
 CALL :FlashPartition boot boot.img
+CALL :FlashPartition dtbo dtbo.img
 goto common_flash
-:install_ksu-n
-cls
-cls
-CALL :print_ascii
-CALL :print_note
-echo.
-call :log "%YELLOW%Starting installation with KSU...%RESET%"
-%fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
-echo.
-CALL :FlashPartition dtbo ksu-n_dtbo.img
-CALL :FlashPartition vbmeta vbmeta.img
-CALL :FlashPartition vbmeta_system vbmeta_system.img
-CALL :FlashPartition boot ksu-n_boot.img
-goto common_flash
+:common_flash
 :install_magisk
 cls
 cls
@@ -262,10 +256,8 @@ echo.
 call :log "%YELLOW%Starting installation with Magisk...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
-CALL :FlashPartition dtbo dtbo.img
-CALL :FlashPartition vbmeta vbmeta.img
-CALL :FlashPartition vbmeta_system vbmeta_system.img
 CALL :FlashPartition boot magisk_boot.img
+CALL :FlashPartition dtbo dtbo.img
 goto common_flash
 :common_flash
 cls
@@ -275,6 +267,8 @@ CALL :print_ascii
 CALL :print_note
 echo.
 CALL :FlashPartition vendor_boot vendor_boot.img
+CALL :FlashPartition vbmeta vbmeta.img
+CALL :FlashPartition vbmeta_system vbmeta_system.img
 cls
 cls
 echo.
@@ -284,17 +278,6 @@ echo.
 call :log "%YELLOW%Flashing super%RESET%"
 %fastboot% flash super images\super.img 2>&1 | %tee% -a "%log_file%"
 echo.
-call :log "%YELLOW%Erasing metadata%RESET%"
-%fastboot% erase metadata 2>&1 | %tee% -a "%log_file%"
-echo.
-call :log "%YELLOW%Flashing userdata%RESET%"
-%fastboot% flash userdata images\userdata.img 2>&1 | %tee% -a "%log_file%"
-echo.
-call :log "%YELLOW%Erasing userdata%RESET%"
-%fastboot% erase userdata 2>&1 | %tee% -a "%log_file%"
-echo.
-REM call :log "%YELLOW%Erasing frp (fix)%RESET%"
-%fastboot% erase frp 2>&1 | %tee% -a "%log_file%"
 %fastboot% reboot 2>&1 | %tee% -a "%log_file%"
 goto finished
 :finished
@@ -302,29 +285,30 @@ echo.
 echo.
 CALL :print_log_ascii
 echo.
-call :log "%GREEN%Installation is complete! Your device has rebooted successfully.%RESET%"
+call :log "%GREEN%Installation is complete^^^! Your device has rebooted successfully.%RESET%"
 echo.
-set /p "=%YELLOW%Press any key to exit%RESET%" <nul
-pause >nul
+echo Press any key to exit...
+pause > nul
 exit
 :print_ascii
 echo.
-echo  @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@
-echo  @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  
-echo  @:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  
-echo  :::  ::: :::      ::: :::  :::      :::      :::          :::   :::  
-echo  :: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :  
+echo @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@
+echo @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  
+echo @:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  
+echo :::  ::: :::      ::: :::  :::      :::      :::          :::   :::  
+echo :: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :  
 echo.
-echo                               P.A.N.Z.
-echo Script By, @ArKT_7                                     
+echo This rom built by: %ROM_MAINTAINER%
 echo.
-EXIT /B
+echo Flasher/Installer by: ArKT
+echo.
+exit /b 1
 :print_note
 echo ######################################################################
 echo %YELLOW%  WARNING: Do not click on this window, as it will pause the process%RESET%
 echo %YELLOW%  Please wait, Device will auto reboot when installation is finished.%RESET%
 echo ######################################################################
-EXIT /B
+exit /b 1
 :print_log_ascii
 echo.
 call :log  "@@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@"
@@ -333,10 +317,11 @@ call :log  "@:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @:: 
 call :log  ":::  ::: :::      ::: :::  :::      :::      :::          :::   :::  "
 call :log  ":: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :   "
 echo.
-call :log  "                             P.A.N.Z.                                " 
-call :log  "Script By - @ArKT_7"
+call :log  "This rom built by: %ROM_MAINTAINER%"
 echo.
-EXIT /B
+call :log  "Flasher/Installer by: ArKT"
+echo.
+exit /b 1
 :FlashPartition
 SET partition=%1
 SET image=%2
@@ -344,7 +329,7 @@ call :log "%YELLOW%Flashing %partition%%RESET%"
 %fastboot% flash %partition%_a images\%image% 2>&1 | %tee% -a "%log_file%"
 %fastboot% flash %partition%_b images\%image% 2>&1 | %tee% -a "%log_file%"
 echo.
-EXIT /B
+exit /b 1
 :log
 echo %~1 | %tee% -a "%log_file%"
 goto :eof
