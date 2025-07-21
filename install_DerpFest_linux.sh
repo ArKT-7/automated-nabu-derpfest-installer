@@ -61,7 +61,7 @@ FlashPartition() {
     echo
 }
 platform_tools_url="https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
-platform_tools_zip="bin/linux/platform-tools.zip"
+platform_tools_zip="bin/platform-tools.zip"
 extract_folder="bin/linux/"
 check_flag="bin/download.flag"
 download_dependencies() {
