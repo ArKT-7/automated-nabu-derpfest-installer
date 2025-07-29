@@ -62,7 +62,7 @@ ui_print " "
 print_line
 print_centered "This rom built by $ROM_MAINTAINER"
 ui_print " "
-print_centered "ROM/Flasher/Installer by ArKT"
+print_centered "Flasher/Installer by ArKT"
 print_line
 if [ "$format" -eq 1 ]; then
   ui_print " "

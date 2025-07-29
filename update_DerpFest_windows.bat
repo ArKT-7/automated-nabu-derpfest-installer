@@ -246,7 +246,6 @@ echo.
 CALL :FlashPartition boot boot.img
 CALL :FlashPartition dtbo dtbo.img
 goto common_flash
-:common_flash
 :install_magisk
 cls
 cls
