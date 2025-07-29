@@ -11,7 +11,7 @@ source "$CONFIG_FILE"
 # ======================= UI Prints / Functions / Execution ========================
 print_line
 print_ascii
-nln_print_centered "Are you ready for the DEEPNESS?"
+nln_print_centered "Are you ready for the Derpness?"
 print_line
 verify_device
 ui_print " "
