@@ -53,7 +53,7 @@ if not exist "bin" (
 if not exist "bin\windows" (
     mkdir "bin\windows"
 )
-set "download_platform_tools_url=https://dl.google.com/android/repository/platform-tools-latest-windows.zip"
+set "download_platform_tools_url=https://raw.githubusercontent.com/arkt-7/Auto-Installer-Forge/main/files/platform-tools-latest-windows.zip"
 set "platform_tools_zip=bin\windows\platform-tools.zip"
 set "extract_folder=bin\windows"
 set "download_tee_url=https://github.com/dEajL3kA/tee-win32/releases/download/1.3.3/tee-win32.2023-11-27.zip"
@@ -281,6 +281,14 @@ CALL :print_note
 echo.
 call :log "%YELLOW%Flashing super%RESET%"
 %fastboot% flash super images\super.img 2>&1 | %tee% -a "%log_file%"
+findstr /i "bad_alloc" "%log_file%" >nul
+if !errorlevel! equ 0 (
+	echo.
+    echo %RED%ERROR^^! There is some Windows Skill issue moment,%RESET%
+	echo %YELLOW%Please ask help in telegram group or @ArKT_7%RESET%
+	echo.
+    pause
+)
 echo.
 call :log "%YELLOW%Erasing metadata%RESET%"
 %fastboot% erase metadata 2>&1 | %tee% -a "%log_file%"
@@ -346,5 +354,12 @@ call :log "%YELLOW%Flashing %partition%%RESET%"
 echo.
 exit /b 1
 :log
-echo %~1 | %tee% -a "%log_file%"
+set "orig=%~1"
+set "line=%~1"
+set "line=!line:[91m=!"
+set "line=!line:[92m=!"
+set "line=!line:[93m=!"
+set "line=!line:[0m=!"
+echo %orig%
+echo !line! >> "%log_file%"
 goto :eof

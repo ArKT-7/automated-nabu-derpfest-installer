@@ -24,7 +24,6 @@ Derfest-rom.zip
     ├── boot.img
     ├── dtbo.img
     ├── ksu-n_boot.img
-    ├── ksu-n_dtbo.img
     ├── magisk_boot.img
     ├── userdata.img
     ├── super.img
@@ -38,8 +37,11 @@ Derfest-rom.zip
         ├── arkt 
         │   └── bootctl                # binary for switch slot
         │   ├── busybox                # Multi-tool binary for Linux shell support
+		│   └── dmsetup                # unmaps /userdata before formatting
         │   ├── libhidltransport.so    # Shared HIDL communication lib
         │   └── libhwbinder.so         # Shared binder IPC lib
+		│   └── make_f2fs              # f2fs format for userdata
+		│   └── mke2fs                 # ext4 format for metadata
         └── google
             └── android
                 ├── update-binary 
@@ -80,7 +82,7 @@ Derfest-rom.zip
 
 ### 📜 Notes
 - **Images Folder:** Contains necessary partition images.
-- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v29.0)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.7)** (For root).
+- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v29.0)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.8)** (For root).
 - **Bin Folder:** Stores platform tools and logging utilities for both Windows and Linux.
   - **Platform Tools for Windows:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-windows.zip)**  
   - **Platform Tools for Linux:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)**  
