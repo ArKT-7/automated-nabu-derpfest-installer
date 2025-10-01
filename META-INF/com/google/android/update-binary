@@ -68,6 +68,8 @@ nl_print_centered() { print_centered "$1"; ui_print " ";}
 ln_print_centered() { ui_print " "; print_centered "$1";}
 nln_print_centered() { ui_print " "; print_centered "$1"; ui_print " ";}
 print_exit() { ui_print " "; ui_print "$BANNER_EXIT";}
+bb() { "$UPD_TEMP_FOLDER/busybox" "$@"; }
+7z() { "$UPD_TEMP_FOLDER/7zzs" "$@"; }
 
 print_line() {
   local char="${1:-=}"
@@ -149,11 +151,11 @@ package_extract_image() {
         ui_print " Usage: package_extract_image <src-file> <dst-file>"
         return 1
     fi
-    if ! [ -f "$UPD_TEMP_FOLDER/busybox" ]; then
-        ui_print " Error: BusyBox not found at $UPD_TEMP_FOLDER/busybox"
+    if ! [ -f "$UPD_TEMP_FOLDER/7zzs" ]; then
+        ui_print " Error: 7zzs not found at $UPD_TEMP_FOLDER/7zzs"
         return 1
     fi
-    bb unzip -p "$UPD_ZIP" "$1" > "$2" || {
+    7z e -so "$UPD_ZIP" "$1" > "$2" || {
         ui_print " Failed to extract image $1"
         return 1
     }
@@ -272,8 +274,6 @@ while [ $i -lt ${#HASH_PAIRS[@]} ]; do
 done
 }
 
-bb() { "$UPD_TEMP_FOLDER/busybox" "$@"; }
-
 flash_image() {
     local image_name=$1
     local partition=$2
@@ -303,7 +303,7 @@ change_slot() {
 check_file() {
     local file_path="$1"
 
-    if ! bb unzip -l "$UPD_ZIP" | grep -q " $file_path$"; then
+    if ! 7z l "$UPD_ZIP" | grep -q " $file_path$"; then
 	    print_exit
         print_centered " File: $file_path not found in package!"
         print_line -
@@ -318,7 +318,7 @@ check_file_and_hash() {
     local file_path="$1"
     local expected_hash="$2"
 
-    if ! unzip -l "$UPD_ZIP" | grep -q " $file_path$"; then
+    if ! 7z l "$UPD_ZIP" | grep -q " $file_path$"; then
 	    print_exit
         print_centered " File: $file_path not found in package!"
         print_line -
@@ -328,7 +328,7 @@ check_file_and_hash() {
         exit 1
     fi
     local actual_hash
-    actual_hash=$(unzip -p "$UPD_ZIP" "$file_path" | bb sha1sum | bb awk '{print $1}')
+    actual_hash=$(7z e -so "$UPD_ZIP" "$file_path" | bb sha1sum | bb awk '{print $1}')
     if [ "$actual_hash" != "$expected_hash" ]; then
 	print_exit
         print_centered "SHA-1 mismatch for $file_path!"
@@ -363,14 +363,14 @@ flash_boot_menu() {
     ui_print " "
     ui_print "    Okay, see u soon! XD"
     ui_print " "
-    bb rm -rf "$UPD_TEMP_FOLDER"
+    rm -rf "$UPD_TEMP_FOLDER"
     exit
   fi
   sel_index=$((selection * 3 + 1))
   boot_img="${root_options_filename[$sel_index]}"
   dtbo_img="${root_options_filename[$((sel_index + 1))]}"
   for image in "$boot_img" "$dtbo_img"; do
-    if ! bb unzip -l "$UPD_ZIP" | grep -q "images/$image.img"; then
+    if ! 7z l "$UPD_ZIP" | grep -q "images/$image.img"; then
       print_exit
       print_centered " File '$image.img' not found!"
       print_centered "Please check (autoinstaller.conf) file"
@@ -411,6 +411,8 @@ package_extract_file "META-INF/com/arkt/libhwbinder.so" "$UPD_TEMP_FOLDER/libhwb
 chmod 0777 "$UPD_TEMP_FOLDER/libhwbinder.so"
 package_extract_file "META-INF/com/arkt/busybox" "$UPD_TEMP_FOLDER/busybox"
 chmod 0777 "$UPD_TEMP_FOLDER/busybox"
+package_extract_file "META-INF/com/arkt/7zzs" "$UPD_TEMP_FOLDER/7zzs"
+chmod 0777 "$UPD_TEMP_FOLDER/7zzs"
 package_extract_file "META-INF/com/arkt/dmsetup" "$UPD_TEMP_FOLDER/dmsetup"
 chmod 0777 "$UPD_TEMP_FOLDER/dmsetup"
 package_extract_file "META-INF/com/arkt/make_f2fs" "$UPD_TEMP_FOLDER/make_f2fs"
