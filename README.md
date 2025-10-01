@@ -1,7 +1,7 @@
 # 🚀 Automated Derpfest Installer for Xiaomi Pad 5 (nabu)
 
 ## A simple and efficient script to flash Derpfest ROM on the Xiaomi Pad 5 (nabu) in fastboot mode and same zip can be flash in recovery.
-### ROM A15.2 Latest Fastboot/Recovery Flashable Download: [DerpFest-v15.2-20250613-nabu-Official-Stable_FASTBOOT_RECOVERY](https://1drv.ms/u/c/e503a90e3c75d1ba/EQqNTufWisdMvsGu6wgJapgBuUPTfSILu8PZ6rjHXx7dWw?e=q7Ipc0)
+## ROM A16 Latest Fastboot/Recovery Flashable Download: [DerpFest-v16.0-20250916-1327-nabu-Official-Stable_FASTBOOT_RECOVERY](https://drive.google.com/file/d/1bqquZ0pPO9FcquqTgPwBXAVVIKG5FR70/view?usp=sharing)
 ### 🏆 Original ROM Creator
 ### This ROM was built by [P.A.N.Z](https://github.com/ppanzenboeck). Special thanks for making this ROM available!
 ---
@@ -10,7 +10,7 @@
 ---
 
 ## 📂 Folder Structure
-### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-june-25), and organize them as follows:
+### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-september-25), and organize them as follows:
 
 ```plaintext
 Derfest-rom.zip
@@ -42,6 +42,7 @@ Derfest-rom.zip
         │   └── libhwbinder.so         # Shared binder IPC lib
 		│   └── make_f2fs              # f2fs format for userdata
 		│   └── mke2fs                 # ext4 format for metadata
+		│   └── 7zzs                   # for zip64 support 
         └── google
             └── android
                 ├── update-binary 
