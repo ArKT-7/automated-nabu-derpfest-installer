@@ -1,7 +1,7 @@
 # 🚀 Automated Derpfest Installer for Xiaomi Pad 5 (nabu)
 
 ## A simple and efficient script to flash Derpfest ROM on the Xiaomi Pad 5 (nabu) in fastboot mode and same zip can be flash in recovery.
-## ROM A16 Latest Fastboot/Recovery Flashable Download: [DerpFest-v16.0-20250916-1327-nabu-Official-Stable_FASTBOOT_RECOVERY](https://drive.google.com/file/d/1bqquZ0pPO9FcquqTgPwBXAVVIKG5FR70/view?usp=sharing)
+## ROM A16 Latest Fastboot/Recovery Flashable Download: [Auto-Installer_DerpFest-v16.0-20251104-1438-nabu-Official-Stable_FASTBOOT_RECOVERY](https://pixeldrain.com/u/Q8DGeDby)
 ### 🏆 Original ROM Creator
 ### This ROM was built by [P.A.N.Z](https://github.com/ppanzenboeck). Special thanks for making this ROM available!
 ---
@@ -10,7 +10,7 @@
 ---
 
 ## 📂 Folder Structure
-### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-september-25), and organize them as follows:
+### Download all necessary binaries, files and [images](https://github.com/ArKT-7/automated-nabu-derpfest-installer/releases/tag/derpfest-october-new-25), and organize them as follows:
 
 ```plaintext
 Derfest-rom.zip
@@ -23,6 +23,7 @@ Derfest-rom.zip
 └── images
     ├── boot.img
     ├── dtbo.img
+    ├── empty_frp.img
     ├── ksu-n_boot.img
     ├── magisk_boot.img
     ├── userdata.img
@@ -83,7 +84,7 @@ Derfest-rom.zip
 
 ### 📜 Notes
 - **Images Folder:** Contains necessary partition images.
-- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v29.0)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.0.8)** (For root).
+- **ROOT_APK_INSATLL_THIS_ONLY Folder:** Stores **[Magisk apk](https://github.com/topjohnwu/Magisk/releases/tag/v29.0)** from which the Magisk boot is patched and **[KernelSU NEXT apk](https://github.com/KernelSU-Next/KernelSU-Next/releases/tag/v1.1.1)** (For root).
 - **Bin Folder:** Stores platform tools and logging utilities for both Windows and Linux.
   - **Platform Tools for Windows:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-windows.zip)**  
   - **Platform Tools for Linux:** **[Download here](https://dl.google.com/android/repository/platform-tools-latest-linux.zip)**  

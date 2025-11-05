@@ -14,6 +14,7 @@ RESET="${ESC}[0m"
 
 ROM_MAINTAINER="P.A.N.Z."
 required_files=("boot.img" "dtbo.img" "ksu-n_boot.img" "magisk_boot.img" "super.img" "userdata.img" "vbmeta.img" "vbmeta_system.img" "vendor_boot.img")
+root="Without root"
 
 print_ascii() {
     echo
@@ -201,9 +202,9 @@ while true; do
     echo
     echo -e "${YELLOW}Choose installation method:${RESET}" | tee -a "$log_file"
     echo
-    echo -e "${YELLOW}1.${RESET} With root (KSU-N - Kernel SU NEXT)"
-    echo -e "${YELLOW}2.${RESET} Without root"
-    echo -e "${YELLOW}3.${RESET} With root (Magisk v29.0)"
+    echo -e "${YELLOW}1.${RESET} Root with (KSU-N - Kernel SU NEXT)"
+    echo -e "${YELLOW}2.${RESET} $root"
+    echo -e "${YELLOW}3.${RESET} Root with (Magisk v29.0)"
     echo -e "${YELLOW}4.${RESET} Cancel Flashing ROM"
     echo
     read -p "Enter option (1, 2, 3 or 4): " install_choice
@@ -218,7 +219,7 @@ while true; do
             print_ascii
             print_note
             echo
-            echo -e "${YELLOW}Starting installation with KSU-NEXT...${RESET}" | tee -a "$log_file"
+            echo -e "${YELLOW}Starting installation Root with (KSU-N - Kernel SU NEXT)...${RESET}" | tee -a "$log_file"
             $fastboot set_active a  2>&1 | tee -a "$log_file"
 			echo
             FlashPartition boot ksu-n_boot.img
@@ -230,7 +231,7 @@ while true; do
             print_ascii
             print_note
             echo
-            echo -e "${YELLOW}Starting installation without root...${RESET}" | tee -a "$log_file"
+            echo -e "${YELLOW}Starting installation $root...${RESET}" | tee -a "$log_file"
             $fastboot set_active a  2>&1 | tee -a "$log_file"
 			echo
             FlashPartition boot boot.img
@@ -242,7 +243,7 @@ while true; do
             print_ascii
             print_note
             echo
-            echo -e "${YELLOW}Starting installation with Magisk...${RESET}" | tee -a "$log_file"
+            echo -e "${YELLOW}Starting installation with Magisk v29.0...${RESET}" | tee -a "$log_file"
             $fastboot set_active a  2>&1 | tee -a "$log_file"
 			echo
             FlashPartition boot magisk_boot.img

@@ -16,6 +16,7 @@ set RESET=%ESC%[0m
 
 set ROM_MAINTAINER=P.A.N.Z.
 set required_files=boot.img dtbo.img ksu-n_boot.img magisk_boot.img super.img userdata.img vbmeta.img vbmeta_system.img vendor_boot.img
+set root=Without root
 
 CALL :print_ascii
 if not exist "images" (
@@ -208,9 +209,9 @@ echo.
 :choose_method
 call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
-echo %YELLOW%1.%RESET% With root (KSU-N - Kernel SU NEXT)
-echo %YELLOW%2.%RESET% Without root
-echo %YELLOW%3.%RESET% With root (Magisk v29.0)
+echo %YELLOW%1.%RESET% Root with (KSU-N - Kernel SU NEXT)
+echo %YELLOW%2.%RESET% %root%
+echo %YELLOW%3.%RESET% Root with (Magisk v29.0)
 echo %YELLOW%4.%RESET% Cancel Flashing ROM 
 echo.
 set /p install_choice=Enter option (1, 2, 3 or 4): 
@@ -228,7 +229,7 @@ cls
 CALL :print_ascii
 CALL :print_note
 echo.
-call :log "%YELLOW%Starting installation with KSU-NEXT...%RESET%"
+call :log "%YELLOW%Starting installation Root with (KSU-N - Kernel SU NEXT)...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
 CALL :FlashPartition boot ksu-n_boot.img
@@ -240,7 +241,7 @@ cls
 CALL :print_ascii
 CALL :print_note
 echo.
-call :log "%YELLOW%Starting installation without root...%RESET%"
+call :log "%YELLOW%Starting installation %root%...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
 CALL :FlashPartition boot boot.img
@@ -299,11 +300,11 @@ pause > nul
 exit
 :print_ascii
 echo.
-echo @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@
-echo @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  
-echo @:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  
-echo :::  ::: :::      ::: :::  :::      :::      :::          :::   :::  
-echo :: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :  
+echo  @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@
+echo  @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  
+echo  @:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  
+echo  :::  ::: :::      ::: :::  :::      :::      :::          :::   :::  
+echo  :: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :   
 echo.
 echo This rom built by: %ROM_MAINTAINER%
 echo.
@@ -318,11 +319,11 @@ echo ######################################################################
 exit /b 1
 :print_log_ascii
 echo.
-call :log  "@@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@"
-call :log  "@@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  "
-call :log  "@:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  "
-call :log  ":::  ::: :::      ::: :::  :::      :::      :::          :::   :::  "
-call :log  ":: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :   "
+call :log  "  @@@@@@@  @@@@@@@@ @@@@@@@  @@@@@@@  @@@@@@@@ @@@@@@@@  @@@@@@ @@@@@@@"
+call :log  "  @@:  @@@ @@:      @@:  @@@ @@:  @@@ @@:      @@:      :@@       @@:  "
+call :log  "  @:@  :@: @:::::   @:@::@:  @:@@:@:  @:::::   @:::::    :@@::    @::  "
+call :log  "  :::  ::: :::      ::: :::  :::      :::      :::          :::   :::  "
+call :log  "  :: :  :  : :: :::  :   : :  :        :       : :: ::: ::.: :     :   "
 echo.
 call :log  "This rom built by: %ROM_MAINTAINER%"
 echo.

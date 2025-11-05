@@ -2,8 +2,8 @@ here put DerpFest rom .img files (latest files has been uploaded to release sect
 
 1. boot.img
 2. dtbo.img
-3. ksu-n_boot.img
-4. ksu-n_dtbo.img
+3. empty_frp.img
+4. ksu-n_boot.img
 5. magisk_boot.img
 6. super.img
 7. userdata.img
