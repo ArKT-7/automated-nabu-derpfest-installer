@@ -211,7 +211,7 @@ call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
 echo %YELLOW%1.%RESET% Root with (KSU-N - Kernel SU NEXT)
 echo %YELLOW%2.%RESET% %root%
-echo %YELLOW%3.%RESET% Root with (Magisk v29.0)
+echo %YELLOW%3.%RESET% Root with (Magisk v30.6)
 echo %YELLOW%4.%RESET% Cancel Flashing ROM 
 echo.
 set /p install_choice=Enter option (1, 2, 3 or 4): 
