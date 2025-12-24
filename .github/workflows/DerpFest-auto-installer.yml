@@ -1,0 +1,185 @@
+name: Forge DerpFest Auto-Installer zip
+
+on:
+  workflow_dispatch:
+    inputs:
+      rom_zip_url:
+        description: 'Direct link to Recovery ROM zip file'
+        required: true
+      custom_root_zip_url:
+        description: 'Direct link to Custom Root Zip (Optional)'
+        required: false
+      security_patch_date:
+        description: 'Security patch level date (e.g. "01 Dec 2025")'
+        required: true
+        default: '01 Dec 2025'
+      rom_version:
+        description: 'build identifier/ROM version'
+        required: true
+        default: 'v16.0-20251215-2112-nabu-Official-Stable'
+      root_type:
+        description: 'Select root method present in ROM'
+        required: true
+        default: 'No Root'
+        type: choice
+        options:
+          - No Root
+          - Kernel Su Next
+      format_default:
+        description: 'Select the default behavior when flashing via recovery.'
+        required: true
+        default: 'Dirty Flash (Update only - keeps user data)'
+        type: choice
+        options:
+          - Dirty Flash (Update only - keeps user data)
+          - Clean Flash (Factory reset - wipes all data)
+
+jobs:
+  Forge-Auto-Installer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download ROM zip
+        id: download_rom
+        run: |
+          URL="${{ github.event.inputs.rom_zip_url }}"
+          mkdir -p rom
+          cd rom
+          curl -L -O -J "$URL"
+          filename=$(ls -1 *.zip | head -n1)
+          if [ -z "$filename" ]; then
+            echo "No zip file downloaded!"
+            exit 1
+          fi
+          echo "Downloaded ROM: rom/$filename"
+          echo "filename=$filename" >> $GITHUB_OUTPUT
+
+      - name: Download Custom Root Zip
+        id: download_root
+        if: ${{ github.event.inputs.custom_root_zip_url != '' }}
+        run: |
+          URL="${{ github.event.inputs.custom_root_zip_url }}"
+          mkdir -p custom-root
+          cd custom-root
+          curl -L -O -J "$URL"
+          filename=$(ls -1 *.zip | head -n1)
+          if [ -z "$filename" ]; then
+            echo "No custom root zip downloaded!"
+            exit 1
+          fi
+          echo "Downloaded Root: custom-root/$filename"
+          echo "filename=$filename" >> $GITHUB_OUTPUT
+
+      - name: Map input strings to numbers
+        run: |
+          case "${{ github.event.inputs.root_type }}" in
+            "No Root") ROOT_TYPE=4; ROOT_LABEL="No Root" ;;
+            "Kernel Su Next") ROOT_TYPE=1; ROOT_LABEL="Kernel Su Next" ;;
+            *) ROOT_TYPE=4; ROOT_LABEL="No Root" ;;
+          esac
+          echo "ROOT_TYPE=$ROOT_TYPE" >> $GITHUB_ENV
+
+          case "${{ github.event.inputs.format_default }}" in
+            "Dirty Flash (Update only - keeps user data)") FORMAT_MODE=0; FORMAT_LABEL="Dirty Flash (Update only - keeps user data)" ;;
+            "Clean Flash (Factory reset - wipes all data)") FORMAT_MODE=1; FORMAT_LABEL="Clean Flash (Factory reset - wipes all data)" ;;
+            *) FORMAT_MODE=0; FORMAT_LABEL="Update" ;;
+          esac
+          echo "FORMAT_MODE=$FORMAT_MODE" >> $GITHUB_ENV
+
+          echo "Root method selected: $ROOT_LABEL"
+          echo "Format type selected: $FORMAT_LABEL"
+
+      - name: Generate autoinstaller.conf
+        run: |
+          cat <<EOF > rom/autoinstaller.conf
+          #!/sbin/sh
+          #
+          # Copyright (C) 2025-26 https://github.com/ArKT-7/Auto-Installer-Forge
+          #
+          # Made for flashing Android ROMs in recovery easily
+          #
+          
+          # ================================ Configurations ================================         
+          DEVICE_CODE="nabu" # Device codename (must match your target device, e.g. "nabu" for Xiaomi Pad 5)
+          ROM_NAME="DerpFest" # The name of the ROM you're flashing
+          ROM_MAINTAINER="P.A.N.Z." # Name or handle of the ROM maintainer
+          ANDROID_VER="16" # Android version
+          DEVICE_NAME="Xiaomi Pad 5" # Full device name
+          BUILD_DATE="07 Nov 2025" # Build date of the ROM
+          SECURITY_PATCH="${{ github.event.inputs.security_patch_date }}" # Security patch level of the ROM
+          ROM_VERSION="${{ github.event.inputs.rom_version }}" # ROM version/build identifier
+          
+          # ASCII art to show first during flashing
+          ASCII_ART_LINES=(
+          " _     _ _      ___ "
+          "(_) __| | | __ |__ \\"
+          "| |/ _  | |/ /   / /"
+          "| | (_| |   <   |_| "
+          "|_|\\__,_|_|\\_\\  (_) "
+          )
+          
+          # List of files and their SHA-1 hashes for verification after extraction
+          # Format: "path/to/file.img" inside the auto-installer folder and "expected_sha1"
+          HASH_PAIRS=(
+            "images/idk.img" "yexidklolyexidklolyexidklolyexidklolyexx"
+          )
+          
+          # Options for rooting, presented to the user, first option will be default
+          # Format: "Display Name" "corresponding_boot_image_filename (without .img)"
+          ROOT_TYPE=${{ env.ROOT_TYPE }}
+          root_options_filename=(
+            "Root with idk" "boot" "dtbo"
+            "Root with Magisk v30.6" "magisk_boot" "dtbo"
+          )
+          
+          FORMAT_DEFAULT=${{ env.FORMAT_MODE }}  # set 1 if want format default selected 
+          SELECTION_TIMEOUT=15  # Seconds to wait before auto-selecting default menu option
+          CHAR_WIDTH=54  		  # Max characters per printed line (used for text centering and wrapping)
+          BANNER_EXIT=" ------------------------Error!------------------------ "  # Banner shown on critical exit or error
+          
+          # ============================== Configurations End ==============================
+          EOF
+          echo "Created rom/autoinstaller.conf"
+
+      - name: Run Auto-Installer Forge script
+        run: |
+          cat rom/autoinstaller.conf
+          chmod +x ./.github/auto_installer.sh
+
+          ROM_PATH="rom/${{ steps.download_rom.outputs.filename }}"
+          CONF_PATH="rom/autoinstaller.conf"
+
+          if [ ! -z "${{ steps.download_root.outputs.filename }}" ]; then
+            ROOT_PATH="custom-root/${{ steps.download_root.outputs.filename }}"
+            echo "Running with custom root zip..."
+            bash ./.github/auto_installer.sh "$ROM_PATH" "$CONF_PATH" "$ROOT_PATH"
+          else
+            echo "Running standard installer..."
+            bash ./.github/auto_installer.sh "$ROM_PATH" "$CONF_PATH"
+          fi
+
+      - name: Find output subfolder
+        id: find_folder
+        run: |
+          if [ -d "Auto-Installer-Forge/out" ] && [ "$(ls -A Auto-Installer-Forge/out)" ]; then
+            SUBFOLDER=$(ls -1 Auto-Installer-Forge/out | head -n1)
+            OUTPUT_BASE="Auto-Installer-Forge/out"
+          elif [ -d "out" ] && [ "$(ls -A out)" ]; then
+            SUBFOLDER=$(ls -1 out | head -n1)
+            OUTPUT_BASE="out"
+          else
+            echo "No output folder found!"
+            exit 1
+          fi
+      
+          echo "subfolder=$SUBFOLDER" >> $GITHUB_OUTPUT
+          echo "output_base=$OUTPUT_BASE" >> $GITHUB_OUTPUT
+
+      - name: Upload Auto-Installer zip file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.find_folder.outputs.subfolder }}
+          path: ${{ steps.find_folder.outputs.output_base }}/${{ steps.find_folder.outputs.subfolder }}/**
