@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download ROM zip
         id: download_rom
@@ -179,7 +179,7 @@ jobs:
           echo "output_base=$OUTPUT_BASE" >> $GITHUB_OUTPUT
 
       - name: Upload Auto-Installer zip file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.find_folder.outputs.subfolder }}
           path: ${{ steps.find_folder.outputs.output_base }}/${{ steps.find_folder.outputs.subfolder }}/**

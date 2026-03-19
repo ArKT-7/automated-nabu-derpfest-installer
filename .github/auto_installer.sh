@@ -8,7 +8,7 @@
 BASE_URL="https://raw.githubusercontent.com/arkt-7/Auto-Installer-Forge/main"
 DERP_BASE_URL="https://raw.githubusercontent.com/arkt-7/automated-nabu-derpfest-installer/main"
 URL_BUSYBOX="$BASE_URL/bin/linux_amd64/busybox"
-URL_PAYLOAD_DUMPER="$BASE_URL/bin/linux_amd64/payload-dumper-go"
+URL_PAYLOAD_DUMPER="$BASE_URL/bin/linux_amd64/otaripper"
 URL_LPMAKE="$BASE_URL/bin/linux_amd64/lpmake"
 URL_LPUNPACK="$BASE_URL/bin/linux_amd64/lpunpack"
 URL_FIGLET="$BASE_URL/bin/linux_amd64/figlet"
@@ -384,7 +384,7 @@ fi
 
 # Download required binaries
 download_and_set_permissions "$URL_BUSYBOX" "$BIN_DIR/busybox"
-download_and_set_permissions "$URL_PAYLOAD_DUMPER" "$BIN_DIR/payload-dumper-go"
+download_and_set_permissions "$URL_PAYLOAD_DUMPER" "$BIN_DIR/otaripper"
 download_and_set_permissions "$URL_LPMAKE" "$BIN_DIR/lpmake"
 download_and_set_permissions "$URL_LPUNPACK" "$BIN_DIR/lpunpack"
 download_and_set_permissions "$URL_FIGLET" "$BIN_DIR/figlet"
@@ -484,11 +484,13 @@ echo -e "payload.bin extraction complete."
 log "[INFO] Extracting payload.bin..."
 echo " "
 if [ -n "$1" ]; then
-  $BIN_DIR/payload-dumper-go -l "$PAYLOAD_FILE"
-  $BIN_DIR/payload-dumper-go -o "$TARGET_DIR" "$PAYLOAD_FILE" > /dev/null 2>&1 || { log "[ERROR] Extraction failed!"; exit 1; }
+    $BIN_DIR/otaripper -l "$PAYLOAD_FILE"
+    $BIN_DIR/otaripper -n -o "$TARGET_DIR" "$PAYLOAD_FILE" > /dev/null 2>&1 || { log "[ERROR] Extraction failed!"; exit 1; }
 else
-  $BIN_DIR/payload-dumper-go -o "$TARGET_DIR" "$PAYLOAD_FILE" || { log "[ERROR] Extraction failed!"; exit 1; }
+    $BIN_DIR/otaripper -n -o "$TARGET_DIR" "$PAYLOAD_FILE" || { log "[ERROR] Extraction failed!"; exit 1; }
 fi
+mv "$TARGET_DIR"/extracted_*/* "$TARGET_DIR"/
+rm -rf "$TARGET_DIR"/extracted_*
 log "[SUCCESS] Extraction completed."
 
 log "[INFO] Generating original checksums..."
@@ -733,19 +735,19 @@ log "[SUCCESS] TEE for windows extracted."
 log "[INFO] Now will Download KernelSU NEXT and Magisk APK for ROOT access!\n"
 
 download_with_fallback \
-    "https://github.com/KernelSU-Next/KernelSU-Next/releases/download/v1.1.1/KernelSU_Next_v1.1.1_12851-release.apk" \
-    "$BASE_URL/files/KernelSU_Next_v1.1.1.apk" \
-    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/KernelSU_Next_v1.1.1.apk" \
-    "KernelSU_Next_v1.1.1.apk"
+    "https://github.com/KernelSU-Next/KernelSU-Next/releases/download/v3.1.0/KernelSU_Next_v3.1.0-spoofed_33024-release.apk" \
+    "$BASE_URL/files/KernelSU_Next_v3.1.0.apk" \
+    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/KernelSU_Next_v3.1.0.apk" \
+    "KernelSU_Next_v3.1.0.apk"
 
 download_with_fallback \
-    "https://github.com/topjohnwu/Magisk/releases/download/v30.6/Magisk-v30.6.apk" \
-    "$BASE_URL/files/Magisk_v30.6.apk" \
-    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/Magisk_v30.6.apk" \
-    "Magisk-v30.6.apk"
+    "https://github.com/topjohnwu/Magisk/releases/download/v30.7/Magisk-v30.7.apk" \
+    "$BASE_URL/files/Magisk_v30.7.apk" \
+    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/Magisk_v30.7.apk" \
+    "Magisk-v30.7.apk"
 
 # Call the funtion with magisk apk name
-patch_magisk_boot "Magisk_v30.6.apk"
+patch_magisk_boot "Magisk_v30.7.apk"
 
 if [ -n "$3" ] && [ -f "$3" ]; then
     echo " "
