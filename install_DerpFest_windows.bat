@@ -64,27 +64,52 @@ set "check_flag=bin\download.flag"
 cls
 cls
 CALL :print_ascii
-if not exist "%check_flag%" (
-    goto download_ask
-) else ( 
-    goto re_download_ask 
+set "fastboot=bin\windows\platform-tools\fastboot.exe"
+set "tee=bin\windows\log-tool\tee-x86.exe"
+if /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
+    set "tee=bin\windows\log-tool\tee-x64.exe"
+) else if /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
+    set "tee=bin\windows\log-tool\tee-a64.exe"
+) else if /I "%PROCESSOR_ARCHITECTURE%"=="x86" (
+    set "tee=bin\windows\log-tool\tee-x86.exe"
 )
-:re_download_ask
-call :get_input "%YELLOW%Do you want to download dependencies again (Y) or %GREEN%continue (C)? %RESET%" download_choice
-if /i "%download_choice%"=="y" (
-    call :download_dependencies
-) else (
-    echo %YELLOW%Continuing without downloading dependencies...%RESET%
-    goto start
+call :check_dependencies
+if "!deps_ok!"=="false" (
+    if not exist "%check_flag%" (
+        call :get_input "%YELLOW%Dependency (fastboot/tee) missing or corrupted. Download it online? %GREEN%(Y/C)%RESET%: " download_choice
+    ) else (
+        call :get_input "%YELLOW%Dependency (fastboot/tee) missing or corrupted. Download it again? %GREEN%(Y/C)%RESET%: " download_choice
+    )
+    if /i "!download_choice!"=="y" (
+        call :download_dependencies
+        call :check_dependencies
+        if "!deps_ok!"=="false" (
+            echo.
+            echo %RED%ERROR^^! Failed to set up dependency properly after downloading%RESET%
+            echo Installation aborted
+            echo Press any key to exit...
+            pause > nul
+            exit /b 1
+        )
+    ) else (
+        echo.
+        echo %RED%Cannot proceed without dependency%RESET%
+        echo Installation cancelled
+        echo Press any key to exit...
+        pause > nul
+        exit /b 1
+    )
 )
-:download_ask
-call :get_input "%YELLOW%Do you want to download dependencies online or %GREEN%continue? %YELLOW%(Y/C)%RESET%: " download_choice
-if /i "%download_choice%"=="y" (
-    call :download_dependencies
-) else (
-    echo %YELLOW%Continuing without downloading dependencies...%RESET%
-    goto start
+goto start
+:check_dependencies
+set "deps_ok=true"
+if not exist "%fastboot%" set "deps_ok=false"
+if not exist "%tee%" set "deps_ok=false"
+if "!deps_ok!"=="true" (
+    "%fastboot%" --version >nul 2>&1
+    if !errorlevel! neq 0 set "deps_ok=false"
 )
+exit /b 0
 :get_input
 set "input="
 set /p input=%~1
@@ -98,88 +123,52 @@ if /i "!first_char!"=="y" (
 ) else if /i "!first_char!"=="c" (
     endlocal & set "%~2=c"
     exit /b 0
+) else if /i "!first_char!"=="n" (
+    endlocal & set "%~2=c"
+    exit /b 0
 )
-echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' or 'C'%RESET%
+echo %RED%Invalid choice.%RESET% %YELLOW%Please enter 'Y' to download or 'C' to cancel.%RESET%
 echo.
 goto get_input
 
 :download_dependencies
-(
+echo.
+echo %YELLOW%Attempting to download platform tools...%RESET%
+timeout /t 2 /nobreak >nul
+call :download_file "%download_platform_tools_url%" "%platform_tools_zip%"
+if exist "%platform_tools_zip%" (
     echo.
-    echo %YELLOW%Downloading platform-tools...%RESET%
-	timeout /t 2 /nobreak >nul
-    curl -L "%download_platform_tools_url%" -o "%platform_tools_zip%"
-    if %errorlevel% neq 0 (
-	    echo.
-        echo %RED%curl failed to download.%RESET% %YELLOW%Trying with again...%RESET%
-		echo.
-        if exist "%platform_tools_zip%" del "%platform_tools_zip%"
-		timeout /t 2 /nobreak >nul
-        curl -L "%download_platform_tools_url%" -o "%platform_tools_zip%"
-    )
-    if exist "%platform_tools_zip%" (
-	    echo.
-        echo Extracting platform-tools...
-        mkdir "%extract_folder%"
-		timeout /t 2 /nobreak >nul
-        tar -xf "%platform_tools_zip%" -C "%extract_folder%"
-        del "%platform_tools_zip%"
-        echo %GREEN%Platform-tools downloaded and extracted successfully.%RESET%
-    ) else (
-	    echo.
-        echo %YELLOW%Platform-tools could not be downloaded. press any key to continue.%RESET%
-        pause
-        pause >nul
-    )
-	echo.
-	echo %YELLOW%Downloading tee-log-tool...%RESET%
-	timeout /t 2 /nobreak >nul
-    curl -L "%download_tee_url%" -o "%tee_zip%"
-    if %errorlevel% neq 0 (
-	    echo.
-        echo %RED%curl failed to download.%RESET% %YELLOW%Trying with again...%RESET%
-		echo.
-        if exist "%tee_zip%" del "%tee_zip%"
-		timeout /t 2 /nobreak >nul
-        curl -L "%download_tee_url%" -o "%tee_zip%"
-    )
-    if exist "%tee_zip%" (
-		echo.
-        echo Extracting tee...
-        mkdir "%tee_extract_folder%"
-		timeout /t 2 /nobreak >nul
-        tar -xf "%tee_zip%" -C "%tee_extract_folder%"
-        del "%tee_zip%"
-        echo %GREEN%tee downloaded and extracted successfully.%RESET%
-    ) else (
-		echo.
-        echo %YELLOW%tee could not be downloaded. press any key to continue.%RESET%
-        pause >nul
-    )
-	echo download flag. > "%check_flag%"
+    echo Extracting platform tools...
+    mkdir "%extract_folder%"
+    timeout /t 2 /nobreak >nul
+    tar -xf "%platform_tools_zip%" -C "%extract_folder%"
+    del "%platform_tools_zip%"
+    echo %GREEN%Platform-tools downloaded and extracted successfully.%RESET%
+) else (
+    echo.
+    echo %RED%Download failed.%RESET%
+    echo %YELLOW%Platform-tools could not be downloaded.%RESET%
 )
+echo.
+echo %YELLOW%Attempting to download tee-log-tool...%RESET%
+timeout /t 2 /nobreak >nul
+call :download_file "%download_tee_url%" "%tee_zip%"
+if exist "%tee_zip%" (
+    echo.
+    echo Extracting tee...
+    mkdir "%tee_extract_folder%"
+    timeout /t 2 /nobreak >nul
+    tar -xf "%tee_zip%" -C "%tee_extract_folder%"
+    del "%tee_zip%"
+    echo %GREEN%tee downloaded and extracted successfully.%RESET%
+) else (
+    echo.
+    echo %RED%Download failed.%RESET%
+    echo %YELLOW%tee could not be downloaded.%RESET%
+)
+echo download flag. > "%check_flag%"
+exit /b 0
 :start
-set "fastboot=bin\windows\platform-tools\fastboot.exe"
-set "tee=bin\windows\log-tool\tee-x86.exe"
-if /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-    set "tee=bin\windows\log-tool\tee-x64.exe"
-) else if /I "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-    set "tee=bin\windows\log-tool\tee-a64.exe"
-) else if /I "%PROCESSOR_ARCHITECTURE%"=="x86" (
-    set "tee=bin\windows\log-tool\tee-x86.exe"
-)
-if not exist "%fastboot%" (
-    echo %RED%%fastboot% not found.%RESET%
-	echo.
-	echo let's proceed with downloading.
-    call :download_dependencies
-)
-if not exist "%tee%" (
-    echo %RED%%tee% not found.%RESET%
-	echo.
-	echo let's proceed with downloading.
-    call :download_dependencies
-)
 set "log_file=logs\auto-installer_log_%date:/=-%_%time::=-%.txt"
 echo. > "%log_file%"
 cls
@@ -187,15 +176,68 @@ cls
 CALL :print_log_ascii
 echo.
 call :log "%YELLOW%Waiting for device...%RESET%"
-set device=unknown
-for /f "tokens=2" %%D in ('%fastboot% getvar product 2^>^&1 ^| findstr /l /b /c:"product:"') do set device=%%D
-if "%device%" neq "nabu" (
+set "device=unknown"
+set "no_link=false"
+set "device_output="
+for /f "delims=" %%A in ('"%fastboot%" getvar product 2^>^&1') do (
+    set "line=%%A"
+    set "device_output=!device_output! !line!"
+    echo !line! | findstr /i /c:"no link" >nul
+    if !errorlevel! equ 0 set "no_link=true"
+    for /f "tokens=1,2" %%C in ("!line!") do (
+        if /i "%%C"=="product:" set "device=%%D"
+    )
+)
+if "!no_link!"=="true" (
     echo.
-    call :log "%YELLOW%Compatible devices: nabu%RESET%"
-    call :log "%RED%Your device: %device%%RESET%"
-	echo.
-    call :log "%YELLOW%Please connect your Xiaomi Pad 5 - Nabu%RESET%"
-	echo.
+    call :log "%YELLOW%fastboot output:!device_output!%RESET%"
+    echo.
+    call :log "%YELLOW%Please restart to bootloader Mode (Fastboot on screen), reconnect, and re-run Auto-Installer%RESET%"
+    call :log "%YELLOW%For manually rebooting to bootloader, keep pressing Power + Volume Down Button%RESET%"
+    call :log "%YELLOW%Then Re-run the Auto-Installer%RESET%"
+    echo.
+    echo Press any key to exit...
+    pause > nul
+    exit /b 1
+)
+if "!device!" neq "nabu" (
+    echo.
+    call :log "%RED%Is it nabu?%RESET%"
+    call :log "%RED%Is it really our beloved Xiaomi Pad 5?%RESET%"
+    call :log "%YELLOW%Device is not recognized as 'nabu - Xiaomi Pad 5'%RESET%"
+    call :log "%YELLOW%Device details:!device_output!%RESET%"
+    call :log "%RED%You need to connect Xiaomi Pad 5 (nabu)%RESET%"
+    echo.
+    echo Press any key to exit...
+    pause > nul
+    exit /b 1
+)
+set "unlocked=unknown"
+for /f "tokens=1,2" %%A in ('"%fastboot%" getvar unlocked 2^>^&1') do (
+    if /i "%%A"=="unlocked:" set "unlocked=%%B"
+)
+if "!unlocked!" neq "yes" (
+    echo.
+    if "!unlocked!" == "no" (
+        call :log "%YELLOW%Bootloader is locked.%RESET%"
+    ) else (
+        call :log "%YELLOW%Unknown bootloader state detected.%RESET%"
+    )
+    call :log "%YELLOW%Please unlock the bootloader and re-run the Auto-Installer%RESET%"
+    echo.
+    call :get_input "Need help unlocking bootloader? open bootloader unlock guide %YELLOW%No(n) - Yes(y)%RESET%: " bl_choice
+    if /i "!bl_choice!"=="y" (
+        call :log "%YELLOW%Redirecting to bootloader unlock guide...%RESET%"
+        echo.
+        call :log "%YELLOW%in case browser not open. Please ctrl + click below or copy the link manually.%RESET%"
+        echo.
+        call :log "%YELLOW%Link: https://github.com/ArKT-7/ArKT-Guides/blob/main/Xiaomi-unlock-bootloader-en.md%RESET%"
+        start "" "https://github.com/ArKT-7/ArKT-Guides/blob/main/Xiaomi-unlock-bootloader-en.md"
+    ) else (
+        call :log "%YELLOW%Ok then bye, meet you again, hope you unlock your device first%RESET%"
+        echo.
+    )
+    echo.
     echo Press any key to exit...
     pause > nul
     exit /b 1
@@ -216,7 +258,7 @@ call :log "%YELLOW%Choose installation method:%RESET%"
 echo.
 echo %YELLOW%1.%RESET% Root with (KSU-N - Kernel SU NEXT)
 echo %YELLOW%2.%RESET% %root%
-echo %YELLOW%3.%RESET% Root with (Magisk v30.6)
+echo %YELLOW%3.%RESET% Root with (Magisk v30.7)
 echo %YELLOW%4.%RESET% Cancel Flashing ROM 
 echo.
 set /p install_choice=Enter option (1, 2, 3 or 4): 
@@ -258,7 +300,7 @@ cls
 CALL :print_ascii
 CALL :print_note
 echo.
-call :log "%YELLOW%Starting installation with Magisk...%RESET%"
+call :log "%YELLOW%Starting installation with Magisk v30.7...%RESET%"
 %fastboot% set_active a 2>&1 | %tee% -a "%log_file%"
 echo.
 CALL :FlashPartition boot magisk_boot.img
@@ -353,6 +395,20 @@ call :log "%YELLOW%Flashing %partition%%RESET%"
 %fastboot% flash %partition%_a images\%image% 2>&1 | %tee% -a "%log_file%"
 %fastboot% flash %partition%_b images\%image% 2>&1 | %tee% -a "%log_file%"
 echo.
+exit /b 1
+:download_file
+set "url=%~1"
+set "file=%~2"
+if exist "%file%" del "%file%"
+curl -L "%url%" -o "%file%"
+if exist "%file%" exit /b 0
+powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%url%' -OutFile '%file%' -UseBasicParsing"
+if exist "%file%" exit /b 0
+powershell -NoProfile -Command "[Net.ServicePointManager]::SecurityProtocol = 3072; (New-Object Net.WebClient).DownloadFile('%url%', '%file%')"
+if exist "%file%" exit /b 0
+set "abs_file=%CD%\%file%"
+bitsadmin /transfer "AutoInstallerDownload" /download /priority normal "%url%" "!abs_file!"
+if exist "%file%" exit /b 0
 exit /b 1
 :log
 set "orig=%~1"

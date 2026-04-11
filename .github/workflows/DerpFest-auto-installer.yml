@@ -132,7 +132,7 @@ jobs:
           ROOT_TYPE=${{ env.ROOT_TYPE }}
           root_options_filename=(
             "Root with idk" "boot" "dtbo"
-            "Root with Magisk v30.6" "magisk_boot" "dtbo"
+            "Root with Magisk v30.7" "magisk_boot" "dtbo"
           )
           
           FORMAT_DEFAULT=${{ env.FORMAT_MODE }}  # set 1 if want format default selected 
