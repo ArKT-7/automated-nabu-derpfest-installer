@@ -735,10 +735,10 @@ log "[SUCCESS] TEE for windows extracted."
 log "[INFO] Now will Download KernelSU NEXT and Magisk APK for ROOT access!\n"
 
 download_with_fallback \
-    "https://github.com/KernelSU-Next/KernelSU-Next/releases/download/v3.1.0/KernelSU_Next_v3.1.0-spoofed_33024-release.apk" \
-    "$BASE_URL/files/KernelSU_Next_v3.1.0.apk" \
-    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/KernelSU_Next_v3.1.0.apk" \
-    "KernelSU_Next_v3.1.0.apk"
+    "https://github.com/KernelSU-Next/KernelSU-Next/releases/download/v3.2.0/KernelSU_Next_v3.2.0-spoofed_33129-release.apk" \
+    "$BASE_URL/files/KernelSU_Next_v3.2.0.apk" \
+    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/KernelSU_Next_v3.2.0.apk" \
+    "KernelSU_Next_v3.2.0.apk"
 
 download_with_fallback \
     "https://github.com/topjohnwu/Magisk/releases/download/v30.7/Magisk-v30.7.apk" \

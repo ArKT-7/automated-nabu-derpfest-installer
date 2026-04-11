@@ -141,49 +141,98 @@ get_input() {
     if [[ "$first_char" == "y" ]]; then
       echo "y"
       return 0
-    elif [[ "$first_char" == "c" ]]; then
+    elif [[ "$first_char" == "c" || "$first_char" == "n" ]]; then
       echo "c"
       return 0
     else
-      echo -e "${RED}Invalid choice.${RESET} ${YELLOW}Please enter 'Y' or 'C'${RESET}"
+      echo -e "${RED}Invalid choice.${RESET} ${YELLOW}Please enter 'Y' to download or 'C' to cancel.${RESET}"
       echo
     fi
   done
 }
-if [[ ! -f "$check_flag" ]]; then
-  choice=$(get_input "${YELLOW}Do you want to download dependencies online or ${GREEN}continue? ${YELLOW}(Y/C): ${RESET}")
+fastboot="${extract_folder}platform-tools/fastboot"
+check_fastboot() {
+    if [ -f "$fastboot" ]; then
+        chmod +x "$fastboot"
+        if "$fastboot" --version &> /dev/null; then
+            return 0
+        fi
+    fi
+    return 1
+}
+if ! check_fastboot; then
+  choice=$(get_input "${YELLOW}Dependency (fastboot) missing or corrupted. Download it now? ${GREEN}(Y/C): ${RESET}")
   if [[ "$choice" == "y" ]]; then
     download_dependencies
-  fi
-else
-  choice=$(get_input "${YELLOW}Do you want to download dependencies again (Y) or ${GREEN}continue (C)? ${RESET}")
-  if [[ "$choice" == "y" ]]; then
-    download_dependencies
-  fi
-fi
-fastboot="${extract_folder}/platform-tools/fastboot"
-chmod -R +x "$extract_folder"
-log_file="logs/auto-installer_log_$(date +'%Y-%m-%d_%H-%M-%S').txt"
-if [ ! -f "$fastboot" ]; then
+    if ! check_fastboot; then
+        echo
+        echo -e "${RED}ERROR! Failed to set up fastboot properly after downloading${RESET}"
+        echo -e "Installation aborted"
+        echo -e "Press any key to exit..."
+        read -n 1 -s
+        exit 1
+    fi
+  else
     echo
-    echo -e "${RED}$fastboot not found.${RESET}" | tee -a "$log_file"
-	echo
-	echo -e "let's proceed with downloading." | tee -a "$log_file"
-    download_dependencies ;
-	chmod -R +x "$extract_folder"
-	chmod +x "$fastboot"
+    echo -e "${RED}Cannot proceed without fastboot dependency${RESET}"
+    echo -e "Installation cancelled"
+    echo -e "Press any key to exit..."
+    read -n 1 -s
+    exit 1
+  fi
 fi
+log_file="logs/auto-installer_log_$(date +'%Y-%m-%d_%H-%M-%S').txt"
 clear
 print_log_ascii
 echo -e "${YELLOW}Waiting for device...${RESET}" | tee -a "$log_file"
-device=$($fastboot getvar product 2>&1 | grep -oP '(?<=product: )\S+')
+device_pulse=$($fastboot getvar product 2>&1)
+device=$(echo "$device_pulse" | grep -oP '(?<=product: )\S+')
+if [[ "$device_pulse" == *"no link"* ]]; then
+    echo
+    echo -e "${YELLOW}fastboot output: $device_pulse${RESET}" | tee -a "$log_file"
+    echo
+    echo -e "${YELLOW}Please restart to bootloader Mode (Fastboot on screen), reconnect, and re-run Auto-Installer${RESET}" | tee -a "$log_file"
+    echo -e "${YELLOW}For manually rebooting to bootloader, keep pressing Power + Volume Down Button${RESET}" | tee -a "$log_file"
+    echo -e "${YELLOW}Then Re-run the Auto-Installer${RESET}" | tee -a "$log_file"
+    echo
+    read -n 1 -s -r -p "Press any key to exit..."
+    exit 1
+fi
 if [ "$device" != "nabu" ]; then
-	echo
-    echo -e "${YELLOW}Compatible devices: nabu${RESET}" | tee -a "$log_file"
-    echo -e "${RED}Your device: $device${RESET}" | tee -a "$log_file"
-	echo
-    echo -e "${YELLOW}Please connect your Xiaomi Pad 5 - Nabu${RESET}" | tee -a "$log_file"
-	echo
+    echo
+    echo -e "${RED}Is it nabu?${RESET}" | tee -a "$log_file"
+    echo -e "${RED}Is it really our beloved Xiaomi Pad 5?${RESET}" | tee -a "$log_file"
+    echo -e "${YELLOW}Device is not recognized as 'nabu - Xiaomi Pad 5'${RESET}" | tee -a "$log_file"
+    echo -e "${YELLOW}Device details: $device_pulse${RESET}" | tee -a "$log_file"
+    echo -e "${RED}You need to connect Xiaomi Pad 5 (nabu)${RESET}" | tee -a "$log_file"
+    echo
+    read -n 1 -s -r -p "Press any key to exit..."
+    exit 1
+fi
+unlocked_hope=$($fastboot getvar unlocked 2>&1)
+unlocked=$(echo "$unlocked_hope" | grep -oP '(?<=unlocked: )\S+')
+if [ "$unlocked" != "yes" ]; then
+    echo
+    if [ "$unlocked" == "no" ]; then
+        echo -e "${YELLOW}Bootloader is locked.${RESET}" | tee -a "$log_file"
+    else
+        echo -e "${YELLOW}Unknown bootloader state detected.${RESET}" | tee -a "$log_file"
+    fi
+    echo -e "${YELLOW}Please unlock the bootloader and re-run the Auto-Installer${RESET}" | tee -a "$log_file"
+    choice=$(get_input "\nNeed help unlocking bootloader? open bootloader unlock guide ${YELLOW}No(n) - Yes(y)${RESET}: ")
+    if [[ "$choice" == "y" ]]; then
+        echo -e "${YELLOW}Redirecting to bootloader unlock guide...\n${RESET}" | tee -a "$log_file"
+        echo -e "${YELLOW}in case browser not open. Please ctrl + click below or copy the link manually.\n${RESET}" | tee -a "$log_file"
+        echo -e "${YELLOW}Link: https://github.com/ArKT-7/ArKT-Guides/blob/main/Xiaomi-unlock-bootloader-en.md${RESET}" | tee -a "$log_file"
+        if command -v xdg-open &> /dev/null; then
+            xdg-open "https://github.com/ArKT-7/ArKT-Guides/blob/main/Xiaomi-unlock-bootloader-en.md" &> /dev/null
+        elif command -v python3 &> /dev/null; then
+            python3 -m webbrowser "https://github.com/ArKT-7/ArKT-Guides/blob/main/Xiaomi-unlock-bootloader-en.md" &> /dev/null
+        fi
+    else
+        echo -e "${YELLOW}Ok then bye, meet you again, hope you unlock your device first\n${RESET}" | tee -a "$log_file"
+    fi
+    echo
     read -n 1 -s -r -p "Press any key to exit..."
     exit 1
 fi
@@ -204,7 +253,7 @@ while true; do
     echo
     echo -e "${YELLOW}1.${RESET} Root with (KSU-N - Kernel SU NEXT)"
     echo -e "${YELLOW}2.${RESET} $root"
-    echo -e "${YELLOW}3.${RESET} Root with (Magisk v30.6)"
+    echo -e "${YELLOW}3.${RESET} Root with (Magisk v30.7)"
     echo -e "${YELLOW}4.${RESET} Cancel Flashing ROM"
     echo
     read -p "Enter option (1, 2, 3 or 4): " install_choice
@@ -243,7 +292,7 @@ while true; do
             print_ascii
             print_note
             echo
-            echo -e "${YELLOW}Starting installation with Magisk v30.6...${RESET}" | tee -a "$log_file"
+            echo -e "${YELLOW}Starting installation with Magisk v30.7...${RESET}" | tee -a "$log_file"
             $fastboot set_active a  2>&1 | tee -a "$log_file"
 			echo
             FlashPartition boot magisk_boot.img
