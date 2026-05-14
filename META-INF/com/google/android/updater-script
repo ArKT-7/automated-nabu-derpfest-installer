@@ -80,13 +80,13 @@ if [ "$format" -eq 1 ]; then
   case "$selection" in
     0)
       print_centered "Data will be formatted."
+	  package_extract_image "images/empty_frp.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/frp"
 	  for i in sdcard data; do umount -lf /$i 2>/dev/null; done
 	  "$UPD_TEMP_FOLDER/dmsetup" remove -f userdata 2>/dev/null
 	  for i in userdata metadata cust; do umount -lf /dev/block/platform/soc/1d84000.ufshc/by-name/$i 2> /dev/null; done
 	  "$UPD_TEMP_FOLDER/make_f2fs" -f -g android /dev/block/platform/soc/1d84000.ufshc/by-name/userdata
 	  "$UPD_TEMP_FOLDER/mke2fs" -t ext4 -F /dev/block/platform/soc/1d84000.ufshc/by-name/metadata
 	  "$UPD_TEMP_FOLDER/mke2fs" -t ext4 -F /dev/block/platform/soc/1d84000.ufshc/by-name/cust
-	  package_extract_image "images/empty_frp.img" "/dev/block/platform/soc/1d84000.ufshc/by-name/frp"
       ;;
     1)
       print_centered "Data formatting canceled."
