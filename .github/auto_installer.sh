@@ -687,7 +687,7 @@ download_with_fallback \
 log "[INFO] Downloading Platform-tools and required tools for Auto-Installer-Forge script...\n"
 
 download_with_fallback \
-    "https://dl.google.com/android/repository/platform-tools-latest-linux.zip" \
+    "$BASE_URL/files/platform-tools-latest-linux.zip" \
     "$BASE_URL/files/platform-tools-latest-linux.zip" \
     "$TARGET_DIR/bin/linux/platform-tools-linux.zip" \
     "platform-tools-latest-linux.zip"

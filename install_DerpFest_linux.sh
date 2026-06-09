@@ -61,7 +61,7 @@ FlashPartition() {
     $fastboot flash "${partition}_b" "images/${image}" 2>&1 | tee -a "$log_file"
     echo
 }
-platform_tools_url="https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
+platform_tools_url="https://raw.githubusercontent.com/arkt-7/Auto-Installer-Forge/main/files/platform-tools-latest-linux.zip"
 platform_tools_zip="bin/platform-tools.zip"
 extract_folder="bin/linux/"
 check_flag="bin/download.flag"

@@ -324,14 +324,6 @@ CALL :print_note
 echo.
 call :log "%YELLOW%Flashing super%RESET%"
 %fastboot% flash super images\super.img 2>&1 | %tee% -a "%log_file%"
-findstr /i "bad_alloc" "%log_file%" >nul
-if !errorlevel! equ 0 (
-	echo.
-    echo %RED%ERROR^^! There is some Windows Skill issue moment,%RESET%
-	echo %YELLOW%Please ask help in telegram group or @ArKT_7%RESET%
-	echo.
-    pause
-)
 echo.
 call :log "%YELLOW%Erasing metadata%RESET%"
 %fastboot% erase metadata 2>&1 | %tee% -a "%log_file%"
