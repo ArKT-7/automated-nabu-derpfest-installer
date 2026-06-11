@@ -187,7 +187,7 @@ patch_magisk_boot() {
     log "[INFO] Patching boot.img with Magisk..\n"
 
     # Unzip only assets and lib folders; if unzip fails, exit
-    if ! $BIN_DIR/busybox unzip -q -o "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/$1" "assets/*" "lib/*" -d "$MAGISK_DIR"; then
+    if ! $BIN_DIR/busybox unzip -q -o "$TARGET_DIR/ROOT_APK_INSTALL_THIS_ONLY/$1" "assets/*" "lib/*" -d "$MAGISK_DIR"; then
         log "[ERROR] Failed to unzip Magisk APK"
         return 1
     fi
@@ -579,7 +579,7 @@ $BIN_DIR/busybox mkdir -p "$TARGET_DIR/META-INF/com/arkt"
 $BIN_DIR/busybox mkdir -p "$TARGET_DIR/bin/windows/platform-tools"
 $BIN_DIR/busybox mkdir -p "$TARGET_DIR/bin/windows/log-tool" 
 $BIN_DIR/busybox mkdir -p "$TARGET_DIR/bin/linux/platform-tools" 
-$BIN_DIR/busybox mkdir -p "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY"
+$BIN_DIR/busybox mkdir -p "$TARGET_DIR/ROOT_APK_INSTALL_THIS_ONLY"
 $BIN_DIR/busybox mv "$TARGET_DIR"/*.img "$TARGET_DIR/images/"
 
 #still gotta upload to mirror location for fallback
@@ -721,13 +721,13 @@ log "[INFO] Now will Download KernelSU NEXT and Magisk APK for ROOT access!\n"
 download_with_fallback \
     "https://github.com/KernelSU-Next/KernelSU-Next/releases/download/v3.2.0/KernelSU_Next_v3.2.0-spoofed_33129-release.apk" \
     "$BASE_URL/files/KernelSU_Next_v3.2.0.apk" \
-    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/KernelSU_Next_v3.2.0.apk" \
+    "$TARGET_DIR/ROOT_APK_INSTALL_THIS_ONLY/KernelSU_Next_v3.2.0.apk" \
     "KernelSU_Next_v3.2.0.apk"
 
 download_with_fallback \
     "https://github.com/topjohnwu/Magisk/releases/download/v30.7/Magisk-v30.7.apk" \
     "$BASE_URL/files/Magisk_v30.7.apk" \
-    "$TARGET_DIR/ROOT_APK_INSATLL_THIS_ONLY/Magisk_v30.7.apk" \
+    "$TARGET_DIR/ROOT_APK_INSTALL_THIS_ONLY/Magisk_v30.7.apk" \
     "Magisk-v30.7.apk"
 
 # Call the funtion with magisk apk name
